@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Taher - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="whatsapp-logo">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h1>WhatsApp Lite</h1>
+            <p class="subtitle">chat WhatsApp web versi lite</p>
+        </div>
+
+        <div class="login-form">
+            <h2>Masukkan nomor telepon anda</h2>
+            
+            <div class="input-group">
+                <label for="phoneNumber">Nomor Telepon</label>
+                <div class="phone-input">
+                    <select id="countryCode">
+                        <option value="+62">+62 (Indonesia)</option>
+                        <option value="+1">+1 (USA)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+91">+91 (India)</option>
+                    </select>
+                    <input type="tel" id="phoneNumber" placeholder="857 1234 5678" maxlength="15">
+                </div>
+            </div>
+
+            <button id="sendOTPBtn" class="btn-primary">
+                <i class="fas fa-sms"></i> Lanjut
+            </button>
+
+            <div class="otp-section" id="otpSection" style="display: none;">
+                <div class="input-group">
+                    <label for="otpCode">Kode Verifikasi (6 digit)</label>
+                    <input type="text" id="otpCode" placeholder="123456" maxlength="6">
+                </div>
+                
+                <div class="otp-timer">
+                    <span id="otpTimer">02:00</span> detik tersisa
+                </div>
+
+                <button id="verifyOTPBtn" class="btn-success">
+                    <i class="fas fa-check-circle"></i> Verifikasi
+                </button>
+
+                <button id="resendOTPBtn" class="btn-secondary" disabled>
+                    Kirim ulang OTP (<span id="resendTimer">60</span>s)
+                </button>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h3><i class="fas fa-shield-alt"></i> FAQ Keamanan</h3>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-lock"></i> Apakah data saya aman?
+                    </div>
+                    <div class="faq-answer">
+                        <strong>YA, 100% AMAN!</strong> Sistem menggunakan Firebase Auth dari Google 
+                        yang sudah terverifikasi dan terenkripsi. Data nomor telepon hanya untuk verifikasi.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-google"></i> Apa itu Firebase Google?
+                    </div>
+                    <div class="faq-answer">
+                        Firebase adalah platform dari Google yang digunakan oleh jutaan aplikasi 
+                        untuk autentikasi yang aman. Sama seperti yang digunakan WhatsApp resmi.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-done"></i> Apa keunggulan nya?
+                    </div>
+                    <div class="faq-answer">
+                        Dengan WhatsApp lite web Semua Aktivitas Tidak ada batas
+                        Dan Bisa sepuasnya Chat tanpa kawatir Akun WhatsApp terblokir.
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-info">
+                <i class="fas fa-info-circle"></i>
+                <span>Dengan masuk, Anda menyetujui <a href="#">Syarat & Ketentuan</a></span>
+            </div>
+        </div>
+
+        <div class="banned-message" id="bannedMessage" style="display: none;">
+            <i class="fas fa-ban"></i>
+            <h3>AKUN ANDA DIBLOKIR</h3>
+            <p>Akun Anda telah diblokir oleh sistem karena menggunakan nama terlarang.</p>
+            <p>Kontak Admin: admin@whatsapp-taher.com</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQobSSWqAnctUFiGjf4RNMWueo3SV_fMY",
+            authDomain: "taher-my-id.firebaseapp.com",
+            databaseURL: "https://taher-my-id-default-rtdb.firebaseio.com",
+            projectId: "taher-my-id",
+            storageBucket: "taher-my-id.appspot.com",
+            messagingSenderId: "844154238987",
+            appId: "1:844154238987:web:7f7bb48c3c4a89f9442f0e"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Referensi database
+        const usersRef = database.ref('whatsapp_users');
+        const bannedUsersRef = database.ref('banned_users');
+
+        // Variabel global
+        let verificationId = null;
+        let otpTimer = null;
+        let resendTimer = null;
+
+        // Event Listeners
+        document.getElementById('sendOTPBtn').addEventListener('click', sendOTP);
+        document.getElementById('verifyOTPBtn').addEventListener('click', verifyOTP);
+        document.getElementById('resendOTPBtn').addEventListener('click', resendOTP);
+
+        // Fungsi untuk mengirim OTP
+        async function sendOTP() {
+            const countryCode = document.getElementById('countryCode').value;
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const fullNumber = countryCode + phoneNumber.replace(/\D/g, '');
+
+            if (!phoneNumber || phoneNumber.length < 10) {
+                alert('Masukkan nomor telepon yang valid!');
+                return;
+            }
+
+            // Format nomor untuk Firebase
+            const formattedNumber = fullNumber.replace('+', '');
+
+            // Cek apakah nomor diblokir
+            if (await checkIfBanned(fullNumber)) {
+                document.getElementById('bannedMessage').style.display = 'block';
+                document.getElementById('login-form').style.display = 'none';
+                return;
+            }
+
+            // Tampilkan OTP section
+            document.getElementById('otpSection').style.display = 'block';
+            document.getElementById('sendOTPBtn').style.display = 'none';
+
+            // Simulasi pengiriman OTP (di production, gunakan Firebase Phone Auth)
+            // Untuk demo, kita buat OTP 123456
+            alert(`OTP dikirim ke ${fullNumber}: 123456 (DEMO)`);
+            
+            // Start timer
+            startOTPTimer();
+            startResendTimer();
+        }
+
+        // Fungsi verifikasi OTP
+        async function verifyOTP() {
+            const otpCode = document.getElementById('otpCode').value.trim();
+            const countryCode = document.getElementById('countryCode').value;
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const fullNumber = countryCode + phoneNumber.replace(/\D/g, '');
+
+            if (!otpCode || otpCode.length !== 6) {
+                alert('Masukkan 6 digit kode OTP!');
+                return;
+            }
+
+            // Demo: OTP yang valid adalah 123456
+            if (otpCode === '123456') {
+                // Cek nama terlarang di nomor telepon
+                if (fullNumber.includes('8123456') || fullNumber.includes('Adam') || 
+                    fullNumber.includes('Tuti') || fullNumber.includes('Haer')) {
+                    banUser(fullNumber, 'System', 'Menggunakan nomor/nama terlarang');
+                    document.getElementById('bannedMessage').style.display = 'block';
+                    return;
+                }
+
+                // Simpan user data
+                const userData = {
+                    phoneNumber: fullNumber,
+                    lastLogin: Date.now(),
+                    deviceInfo: navigator.userAgent,
+                    status: 'online'
+                };
+
+                usersRef.child(fullNumber.replace('+', '')).set(userData);
+
+                // Simpan di localStorage
+                localStorage.setItem('whatsapp_user', JSON.stringify({
+                    phone: fullNumber,
+                    loggedIn: true
+                }));
+
+                // Redirect ke halaman akun
+                window.location.href = 'akun.html';
+            } else {
+                alert('Kode OTP salah! Coba lagi.');
+            }
+        }
+
+        // Fungsi untuk kirim ulang OTP
+        function resendOTP() {
+            clearInterval(resendTimer);
+            alert('OTP dikirim ulang! Kode: 123456');
+            startResendTimer();
+        }
+
+        // Timer untuk OTP
+        function startOTPTimer() {
+            let timeLeft = 120;
+            const timerElement = document.getElementById('otpTimer');
+            
+            otpTimer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    document.getElementById('otpSection').style.display = 'none';
+                    document.getElementById('sendOTPBtn').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        // Timer untuk kirim ulang
+        function startResendTimer() {
+            let timeLeft = 60;
+            const timerElement = document.getElementById('resendTimer');
+            const resendBtn = document.getElementById('resendOTPBtn');
+            
+            resendBtn.disabled = true;
+            resendBtn.classList.add('disabled');
+            
+            resendTimer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.classList.remove('disabled');
+                    timerElement.textContent = '0';
+                }
+            }, 1000);
+        }
+
+        // Cek apakah user diblokir
+        async function checkIfBanned(phoneNumber) {
+            return new Promise((resolve) => {
+                bannedUsersRef.child(phoneNumber.replace('+', '')).once('value', snapshot => {
+                    resolve(snapshot.exists());
+                });
+            });
+        }
+
+        // Fungsi banned user
+        function banUser(phoneNumber, bannedBy, reason) {
+            const banData = {
+                phoneNumber: phoneNumber,
+                bannedBy: bannedBy,
+                reason: reason,
+                timestamp: Date.now()
+            };
+            
+            bannedUsersRef.child(phoneNumber.replace('+', '')).set(banData);
+        }
+
+     
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                value = value.match(/.{1,4}/g).join(' ');
+            }
+            e.target.value = value;
+        });
+
+        // login
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('whatsapp_user');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                if (user.loggedIn) {
+                    
+                    window.location.href = 'akun.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

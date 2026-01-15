@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Taher - Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional Styles for Akun Page */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background-color: var(--whatsapp-chat-bg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 30%;
+            min-width: 300px;
+            background-color: white;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Sidebar */
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--whatsapp-dark-green);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .online-status {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--online-green);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .user-info h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .user-info p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(30deg);
+        }
+
+        /* Settings Menu */
+        .settings-menu {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .settings-menu.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .menu-item i {
+            width: 20px;
+            color: var(--whatsapp-dark-green);
+        }
+
+        .menu-item.logout {
+            color: #ff4444;
+        }
+
+        .menu-item.logout i {
+            color: #ff4444;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            padding: 15px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+
+        /* Chat List */
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .chat-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .chat-item.active {
+            background-color: var(--whatsapp-light-green);
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chat-preview {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .chat-preview p {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-count {
+            background-color: var(--whatsapp-green);
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Floating Button */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--whatsapp-gray);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23E5DDD5"/><path d="M0,0 L100,0 L100,100 Z" fill="%23D4C8BC" opacity="0.1"/></svg>');
+        }
+
+        .chat-header-main {
+            background-color: var(--whatsapp-dark-green);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-contact-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chat-messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            position: relative;
+            word-wrap: break-word;
+            animation: messageAppear 0.3s ease;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.sent {
+            background-color: var(--whatsapp-light-green);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received {
+            background-color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .message-status {
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .message-status.delivered {
+            color: var(--whatsapp-blue);
+        }
+
+        .message-status.read {
+            color: var(--whatsapp-green);
+        }
+
+        .chat-input-container {
+            padding: 15px;
+            background-color: white;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .emoji-btn, .attach-btn, .voice-btn {
+            background: none;
+            border: none;
+            color: var(--whatsapp-dark-green);
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .emoji-btn:hover, .attach-btn:hover, .voice-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            background-color: #f5f5f5;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn i {
+            font-size: 18px;
+        }
+
+        /* No Chat Selected */
+        .no-chat-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .no-chat-selected i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Profile Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .profile-image-upload {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #f0f0f0;
+        }
+
+        .change-photo-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--whatsapp-green);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .change-photo-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            .chat-area {
+                display: none;
+            }
+            
+            .chat-area.active {
+                display: flex;
+            }
+            
+            .back-btn {
+                display: block;
+            }
+            
+            .floating-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Header -->
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="profile-avatar" id="userAvatar">
+                        <div class="online-status"></div>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="userName">Loading...</h3>
+                        <p id="userStatus">Online</p>
+                    </div>
+                </div>
+                <button class="settings-btn" id="settingsBtn">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+
+            <!-- Settings Menu -->
+            <div class="settings-menu" id="settingsMenu">
+                <div class="menu-item" id="profileBtn">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </div>
+                <div class="menu-item" id="settingsOptionBtn">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </div>
+                <div class="menu-item" id="botBtn">
+                    <i class="fas fa-robot"></i>
+                    <span>Bot WhatsApp</span>
+                </div>
+                <div class="menu-item logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchChat" placeholder="Cari chat atau kontak...">
+                </div>
+            </div>
+
+            <!-- Chat List -->
+            <div class="chat-list" id="chatList">
+                <!-- Chat items will be loaded here -->
+                <div class="no-chats" id="noChats" style="text-align: center; padding: 40px 20px; color: #666;">
+                    <i class="fas fa-comments" style="font-size: 50px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <p>Belum ada percakapan</p>
+                    <p>Klik tombol + untuk memulai chat baru</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area" id="chatArea">
+            <!-- Chat Header -->
+            <div class="chat-header-main">
+                <button class="back-btn" id="backBtn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="chat-contact-info" id="chatContactInfo">
+                    <div class="profile-avatar small" id="chatContactAvatar">
+                        <div class="online-status"></div>
+                    </div>
+                    <div>
+                        <h3 id="chatContactName">Pilih Percakapan</h3>
+                        <p id="chatContactStatus">Terakhir online hari ini</p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="voice-btn">
+                        <i class="fas fa-phone-alt"></i>
+                    </button>
+                    <button class="attach-btn">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages-container" id="chatMessages">
+                <div class="no-chat-selected" id="noChatSelected">
+                    <i class="fab fa-whatsapp"></i>
+                    <h2>WhatsApp Taher</h2>
+                    <p>Pilih percakapan untuk mulai mengobrol</p>
+                    <p>Pesan dan panggilan dienkripsi secara end-to-end</p>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <button class="emoji-btn">
+                    <i class="far fa-smile"></i>
+                </button>
+                <button class="attach-btn" id="attachBtn">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="text" class="chat-input" id="messageInput" placeholder="Ketik pesan..." disabled>
+                <button class="send-btn" id="sendBtn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Button for Contacts -->
+        <div class="floating-btn" id="contactsBtn">
+            <i class="fas fa-plus"></i>
+        </div>
+
+        <!-- Profile Modal -->
+        <div class="modal" id="profileModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Profil Saya</h3>
+                    <button class="close-btn" id="closeProfileModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="profile-image-upload">
+                        <div class="profile-image-container">
+                            <img src="" alt="Profile" class="profile-image" id="profileImage">
+                            <button class="change-photo-btn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="profileName">Nama</label>
+                        <input type="text" id="profileName" placeholder="Masukkan nama Anda">
+                        <small class="error-message" id="nameError" style="color: #ff4444; display: none;">
+                            Nama tidak boleh mengandung Adam, Tuti, atau Haer!
+                        </small>
+                    </div>
+                    <div class="input-group">
+                        <label for="profileStatus">Status</label>
+                        <textarea id="profileStatus" placeholder="Apa yang sedang Anda pikirkan?" rows="3"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="profilePhone">Nomor Telepon</label>
+                        <input type="text" id="profilePhone" disabled>
+                    </div>
+                    <button class="btn-primary" id="saveProfileBtn" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-save"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQobSSWqAnctUFiGjf4RNMWueo3SV_fMY",
+            authDomain: "taher-my-id.firebaseapp.com",
+            databaseURL: "https://taher-my-id-default-rtdb.firebaseio.com",
+            projectId: "taher-my-id",
+            storageBucket: "taher-my-id.appspot.com",
+            messagingSenderId: "844154238987",
+            appId: "1:844154238987:web:7f7bb48c3c4a89f9442f0e"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Referensi database
+        const usersRef = database.ref('whatsapp_users');
+        const messagesRef = database.ref('whatsapp_messages');
+        const contactsRef = database.ref('whatsapp_contacts');
+
+        // Variabel global
+        let currentUser = null;
+        let currentChat = null;
+        let userData = null;
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initApp);
+        document.getElementById('settingsBtn').addEventListener('click', toggleSettingsMenu);
+        document.getElementById('profileBtn').addEventListener('click', showProfileModal);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('contactsBtn').addEventListener('click', goToContacts);
+        document.getElementById('closeProfileModal').addEventListener('click', closeProfileModal);
+        document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+        document.getElementById('profileUpload').addEventListener('change', uploadProfileImage);
+        document.getElementById('backBtn').addEventListener('click', showChatList);
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Inisialisasi aplikasi
+        function initApp() {
+            // Cek login status
+            const savedUser = localStorage.getItem('whatsapp_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(savedUser);
+            loadUserData();
+            loadChats();
+            
+            // Update status online
+            updateOnlineStatus(true);
+        }
+
+        // Load user data
+        function loadUserData() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            usersRef.child(userPhone).on('value', snapshot => {
+                userData = snapshot.val();
+                
+                if (userData) {
+                    // Update UI
+                    document.getElementById('userName').textContent = userData.name || userData.phoneNumber;
+                    document.getElementById('profileName').value = userData.name || '';
+                    document.getElementById('profileStatus').value = userData.status || '';
+                    document.getElementById('profilePhone').value = userData.phoneNumber || currentUser.phone;
+                    
+                    // Set avatar
+                    const avatar = document.getElementById('userAvatar');
+                    const avatarText = (userData.name || userData.phoneNumber).charAt(0).toUpperCase();
+                    avatar.textContent = avatarText;
+                    
+                    // Set profile image if exists
+                    if (userData.profileImage) {
+                        document.getElementById('profileImage').src = userData.profileImage;
+                    }
+                }
+            });
+        }
+
+        // Load chats
+        function loadChats() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Load contacts who have chatted with this user
+            contactsRef.child(userPhone).on('value', snapshot => {
+                const contacts = snapshot.val();
+                const chatList = document.getElementById('chatList');
+                const noChats = document.getElementById('noChats');
+                
+                if (!contacts) {
+                    noChats.style.display = 'block';
+                    return;
+                }
+                
+                noChats.style.display = 'none';
+                chatList.innerHTML = '';
+                
+                Object.keys(contacts).forEach(contactPhone => {
+                    usersRef.child(contactPhone).once('value', userSnapshot => {
+                        const contactData = userSnapshot.val();
+                        if (contactData) {
+                            createChatItem(contactData, contactPhone);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Create chat item
+        function createChatItem(contactData, contactPhone) {
+            const chatList = document.getElementById('chatList');
+            
+            const chatItem = document.createElement('div');
+            chatItem.className = 'chat-item';
+            chatItem.dataset.phone = contactPhone;
+            
+            // Get last message
+            messagesRef.orderByChild('timestamp').limitToLast(1).on('value', snapshot => {
+                let lastMessage = 'Mulai percakapan';
+                let lastTime = '';
+                
+                snapshot.forEach(childSnapshot => {
+                    const msg = childSnapshot.val();
+                    if ((msg.sender === currentUser.phone.replace('+', '') && msg.receiver === contactPhone) ||
+                        (msg.receiver === currentUser.phone.replace('+', '') && msg.sender === contactPhone)) {
+                        lastMessage = msg.text || '📎 File';
+                        lastTime = formatTime(msg.timestamp);
+                    }
+                });
+            
+                chatItem.innerHTML = `
+                    <div class="chat-avatar">${(contactData.name || contactPhone).charAt(0).toUpperCase()}</div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <div class="chat-name">${contactData.name || contactPhone}</div>
+                            <div class="chat-time">${lastTime}</div>
+                        </div>
+                        <div class="chat-preview">
+                            <p>${lastMessage}</p>
+                        </div>
+                    </div>
+                `;
+                
+                chatItem.addEventListener('click', () => openChat(contactData, contactPhone));
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        // Open chat
+        function openChat(contactData, contactPhone) {
+            currentChat = contactPhone;
+            
+            // Update UI
+            document.getElementById('chatContactName').textContent = contactData.name || contactPhone;
+            document.getElementById('chatContactAvatar').textContent = (contactData.name || contactPhone).charAt(0).toUpperCase();
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            
+            // Show chat area on mobile
+            document.getElementById('chatArea').classList.add('active');
+            document.getElementById('noChatSelected').style.display = 'none';
+            
+            // Load messages
+            loadMessages(contactPhone);
+        }
+
+        // Load messages for a chat
+        function loadMessages(contactPhone) {
+            const userPhone = currentUser.phone.replace('+', '');
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = '';
+            
+            messagesRef.orderByChild('timestamp').on('value', snapshot => {
+                messagesContainer.innerHTML = '';
+                const messages = snapshot.val();
+                
+                if (!messages) return;
+                
+                const chatMessages = [];
+                
+                Object.values(messages).forEach(message => {
+                    if ((message.sender === userPhone && message.receiver === contactPhone) ||
+                        (message.sender === contactPhone && message.receiver === userPhone)) {
+                        chatMessages.push(message);
+                    }
+                });
+                
+                // Sort by timestamp
+                chatMessages.sort((a, b) => a.timestamp - b.timestamp);
+                
+                // Display messages
+                chatMessages.forEach(message => {
+                    displayMessage(message, message.sender === userPhone);
+                });
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        // Display a message
+        function displayMessage(message, isSent) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            const time = formatTime(message.timestamp);
+            
+            messageDiv.innerHTML = `
+                <div class="message-text">${message.text}</div>
+                <div class="message-time">
+                    ${time}
+                    ${isSent ? '<span class="message-status delivered"><i class="fas fa-check-double"></i></span>' : ''}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+        }
+
+        // Send message
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const text = messageInput.value.trim();
+            
+            if (!text || !currentChat) return;
+            
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Cek kata terlarang
+            if (containsForbiddenWords(text)) {
+                alert('Pesan mengandung kata terlarang!');
+                return;
+            }
+            
+            const messageData = {
+                text: text,
+                sender: userPhone,
+                receiver: currentChat,
+                timestamp: Date.now(),
+                type: 'text',
+                status: 'sent'
+            };
+            
+            // Save to database
+            messagesRef.push(messageData);
+            
+            // Update contact list
+            updateContactList(userPhone, currentChat);
+            updateContactList(currentChat, userPhone);
+            
+            // Clear input
+            messageInput.value = '';
+        }
+
+        // Update contact list
+        function updateContactList(user1, user2) {
+            contactsRef.child(user1).child(user2).set({
+                lastContact: Date.now()
+            });
+        }
+
+        // Toggle settings menu
+        function toggleSettingsMenu() {
+            const menu = document.getElementById('settingsMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Show profile modal
+        function showProfileModal() {
+            document.getElementById('settingsMenu').classList.remove('show');
+            document.getElementById('profileModal').classList.add('show');
+        }
+
+        // Close profile modal
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        // Save profile
+        function saveProfile() {
+            const nameInput = document.getElementById('profileName');
+            const statusInput = document.getElementById('profileStatus');
+            const name = nameInput.value.trim();
+            
+            // Cek nama terlarang
+            if (containsForbiddenWords(name)) {
+                document.getElementById('nameError').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('nameError').style.display = 'none';
+            
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            const updates = {
+                name: name,
+                status: statusInput.value.trim(),
+                lastUpdate: Date.now()
+            };
+            
+            usersRef.child(userPhone).update(updates);
+            
+            // Update UI
+            document.getElementById('userName').textContent = name || currentUser.phone;
+            
+            closeProfileModal();
+            alert('Profil berhasil diperbarui!');
+        }
+
+        // Upload profile image
+        function uploadProfileImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const userPhone = currentUser.phone.replace('+', '');
+            const storageRef = storage.ref();
+            const fileRef = storageRef.child(`profile_images/${userPhone}_${Date.now()}`);
+            
+            fileRef.put(file).then(snapshot => {
+                return snapshot.ref.getDownloadURL();
+            }).then(downloadURL => {
+                // Update user data
+                usersRef.child(userPhone).update({
+                    profileImage: downloadURL
+                });
+                
+                // Update UI
+                document.getElementById('profileImage').src = downloadURL;
+            }).catch(error => {
+                console.error('Upload error:', error);
+                alert('Gagal mengupload gambar!');
+            });
+        }
+
+        // Go to contacts page
+        function goToContacts() {
+            window.location.href = 'kontak.html';
+        }
+
+        // Show chat list (mobile)
+        function showChatList() {
+            document.getElementById('chatArea').classList.remove('active');
+        }
+
+        // Logout function
+        function logout() {
+            // Update status offline
+            updateOnlineStatus(false);
+            
+            // Clear localStorage
+            localStorage.removeItem('whatsapp_user');
+            
+            // Redirect to login
+            window.location.href = 'index.html';
+        }
+
+        // Update online status
+        function updateOnlineStatus(isOnline) {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            if (userPhone) {
+                usersRef.child(userPhone).update({
+                    online: isOnline,
+                    lastSeen: Date.now()
+                });
+            }
+        }
+
+        // Cek kata terlarang
+        function containsForbiddenWords(text) {
+            const forbiddenWords = ['adam', 'tuti', 'haer'];
+            const lowerText = text.toLowerCase();
+            
+            return forbiddenWords.some(word => lowerText.includes(word));
+        }
+
+        // Format waktu
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 86400000) { // Less than 24 hours
+                return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            }
+        }
+
+        // Close settings menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const settingsMenu = document.getElementById('settingsMenu');
+            const settingsBtn = document.getElementById('settingsBtn');
+            
+            if (settingsMenu.classList.contains('show') && 
+                !settingsMenu.contains(event.target) && 
+                !settingsBtn.contains(event.target)) {
+                settingsMenu.classList.remove('show');
+            }
+        });
+
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                updateOnlineStatus(true);
+            } else {
+                updateOnlineStatus(false);
+            }
+        });
+
+        // Handle beforeunload
+        window.addEventListener('beforeunload', function() {
+            updateOnlineStatus(false);
+        });
+    </script>
+</body>
+</html>

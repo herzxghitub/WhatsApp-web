@@ -1,0 +1,323 @@
+/* Reset dan Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --whatsapp-green: #25D366;
+    --whatsapp-dark-green: #128C7E;
+    --whatsapp-light-green: #DCF8C6;
+    --whatsapp-blue: #34B7F1;
+    --whatsapp-gray: #ECE5DD;
+    --whatsapp-dark-gray: #3C3C3C;
+    --whatsapp-chat-bg: #E5DDD5;
+    --online-green: #4CAF50;
+    --offline-gray: #9E9E9E;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* Login Page */
+.login-page {
+    background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-container {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.logo-section {
+    margin-bottom: 40px;
+}
+
+.whatsapp-logo {
+    font-size: 70px;
+    color: var(--whatsapp-green);
+    margin-bottom: 20px;
+}
+
+.login-container h1 {
+    color: var(--whatsapp-dark-green);
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.login-form h2 {
+    color: var(--whatsapp-dark-green);
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+}
+
+.phone-input {
+    display: flex;
+    gap: 10px;
+}
+
+.phone-input select {
+    width: 120px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.phone-input input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.phone-input input:focus,
+.phone-input select:focus {
+    outline: none;
+    border-color: var(--whatsapp-green);
+    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--whatsapp-green);
+    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+}
+
+/* Button Styles */
+.btn-primary, .btn-success, .btn-secondary {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #f0f2f5;
+    color: #666;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-secondary:hover:not(.disabled) {
+    background-color: #e4e6e9;
+}
+
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* OTP Section */
+.otp-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+}
+
+.otp-timer {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: bold;
+    color: #856404;
+}
+
+.otp-timer span {
+    font-size: 18px;
+    color: #d63031;
+}
+
+/* FAQ Section */
+.faq-section {
+    margin-top: 30px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: left;
+}
+
+.faq-section h3 {
+    color: var(--whatsapp-dark-green);
+    margin-bottom: 15px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.faq-answer {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: white;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--whatsapp-green);
+}
+
+.login-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-info a {
+    color: var(--whatsapp-dark-green);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-info a:hover {
+    text-decoration: underline;
+}
+
+/* Banned Message */
+.banned-message {
+    background: linear-gradient(135deg, #ff6b6b, #c0392b);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.banned-message i {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.banned-message h3 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.banned-message p {
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-page {
+        padding: 10px;
+    }
+    
+    .login-container {
+        padding: 30px 20px;
+        border-radius: 15px;
+    }
+    
+    .whatsapp-logo {
+        font-size: 50px;
+    }
+    
+    .phone-input {
+        flex-direction: column;
+    }
+    
+    .phone-input select {
+        width: 100%;
+    }
+}

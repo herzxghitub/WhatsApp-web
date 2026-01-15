@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Taher - Kontak</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .contacts-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .contacts-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .search-contacts {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            background-color: white;
+        }
+
+        .contacts-list {
+            padding: 20px;
+        }
+
+        .contacts-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--whatsapp-dark-green);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .contact-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            position: relative;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--online-green);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .contact-status {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .start-chat-btn {
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .start-chat-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .no-contacts {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .no-contacts i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .loading-contacts {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--whatsapp-green);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .contacts-container {
+                padding: 10px;
+            }
+            
+            .contacts-header {
+                padding: 15px;
+                border-radius: 10px 10px 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contacts-container">
+        <!-- Header -->
+        <div class="contacts-header">
+            <button class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>Kontak Online</h1>
+            <div style="width: 40px;"></div> <!-- Spacer for alignment -->
+        </div>
+
+        <!-- Search -->
+        <div class="search-contacts">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchContact" placeholder="Cari kontak...">
+            </div>
+        </div>
+
+        <!-- Contacts List -->
+        <div class="contacts-list">
+            <div class="contacts-section">
+                <div class="section-title">
+                    <i class="fas fa-users"></i> Semua Pengguna Online
+                </div>
+                <div id="contactsOnlineList">
+                    <div class="loading-contacts">
+                        <div class="loading-spinner"></div>
+                        <p>Memuat kontak...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-contacts" id="noContacts" style="display: none;">
+            <i class="fas fa-user-slash"></i>
+            <h3>Tidak ada kontak online</h3>
+            <p>Saat ini tidak ada pengguna lain yang online</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQobSSWqAnctUFiGjf4RNMWueo3SV_fMY",
+            authDomain: "taher-my-id.firebaseapp.com",
+            databaseURL: "https://taher-my-id-default-rtdb.firebaseio.com",
+            projectId: "taher-my-id",
+            storageBucket: "taher-my-id.appspot.com",
+            messagingSenderId: "844154238987",
+            appId: "1:844154238987:web:7f7bb48c3c4a89f9442f0e"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Referensi database
+        const usersRef = database.ref('whatsapp_users');
+        const contactsRef = database.ref('whatsapp_contacts');
+
+        // Variabel global
+        let currentUser = null;
+        let allContacts = [];
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initContacts);
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        document.getElementById('searchContact').addEventListener('input', filterContacts);
+
+        // Inisialisasi kontak
+        function initContacts() {
+            // Cek login status
+            const savedUser = localStorage.getItem('whatsapp_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(savedUser);
+            loadContacts();
+        }
+
+        // Load semua kontak
+        function loadContacts() {
+            usersRef.on('value', snapshot => {
+                const users = snapshot.val();
+                const contactsList = document.getElementById('contactsOnlineList');
+                const noContacts = document.getElementById('noContacts');
+                
+                if (!users) {
+                    contactsList.style.display = 'none';
+                    noContacts.style.display = 'block';
+                    return;
+                }
+                
+                allContacts = [];
+                contactsList.innerHTML = '';
+                
+                Object.keys(users).forEach(userId => {
+                    // Skip current user
+                    const currentUserId = currentUser.phone.replace('+', '');
+                    if (userId === currentUserId) return;
+                    
+                    const userData = users[userId];
+                    
+                    // Cek jika online (dalam 2 menit terakhir)
+                    const isOnline = userData.online === true || 
+                                    (userData.lastSeen && (Date.now() - userData.lastSeen < 120000));
+                    
+                    if (isOnline) {
+                        allContacts.push({
+                            id: userId,
+                            ...userData
+                        });
+                        
+                        createContactItem(userData, userId);
+                    }
+                });
+                
+                if (allContacts.length === 0) {
+                    contactsList.style.display = 'none';
+                    noContacts.style.display = 'block';
+                }
+            });
+        }
+
+        // Buat item kontak
+        function createContactItem(userData, userId) {
+            const contactsList = document.getElementById('contactsOnlineList');
+            
+            const contactItem = document.createElement('div');
+            contactItem.className = 'contact-item';
+            contactItem.dataset.userId = userId;
+            
+            const avatarText = (userData.name || userData.phoneNumber || userId).charAt(0).toUpperCase();
+            
+            contactItem.innerHTML = `
+                <div class="contact-avatar">
+                    ${avatarText}
+                    <div class="online-dot"></div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">${userData.name || userData.phoneNumber || userId}</div>
+                    <div class="contact-status">${userData.status || 'Online'}</div>
+                </div>
+                <button class="start-chat-btn" onclick="startChat('${userId}')">
+                    <i class="fas fa-comment"></i>
+                </button>
+            `;
+            
+            contactsList.appendChild(contactItem);
+        }
+
+        // Filter kontak berdasarkan pencarian
+        function filterContacts() {
+            const searchTerm = document.getElementById('searchContact').value.toLowerCase();
+            const contactItems = document.querySelectorAll('.contact-item');
+            
+            contactItems.forEach(item => {
+                const name = item.querySelector('.contact-name').textContent.toLowerCase();
+                const status = item.querySelector('.contact-status').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || status.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Mulai chat dengan kontak
+        function startChat(userId) {
+            // Simpan kontak di database
+            const currentUserId = currentUser.phone.replace('+', '');
+            contactsRef.child(currentUserId).child(userId).set({
+                lastContact: Date.now()
+            });
+            
+            // Redirect ke chat
+            window.location.href = `akun.html?chat=${userId}`;
+        }
+
+        // Kembali ke halaman sebelumnya
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
