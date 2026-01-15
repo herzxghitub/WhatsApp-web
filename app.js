@@ -204,3 +204,214 @@ if (typeof module !== 'undefined' && module.exports) {
         formatTime24
     };
 }
+
+// Fungsi untuk grup chat
+async function createGroupChat(groupName, members, groupPhoto = null) {
+    const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+    
+    const groupData = {
+        groupId: groupId,
+        groupName: groupName,
+        groupPhoto: groupPhoto,
+        createdBy: currentUserId,
+        createdAt: Date.now(),
+        members: members,
+        lastActive: Date.now()
+    };
+    
+    // Simpan ke database
+    await database.ref('whatsapp_groups').child(groupId).set(groupData);
+    
+    // Tambahkan ke setiap anggota
+    members.forEach(memberId => {
+        database.ref('whatsapp_user_groups').child(memberId).child(groupId).set({
+            joinedAt: Date.now()
+        });
+    });
+    
+    return groupId;
+}
+
+// Fungsi untuk kirim pesan grup
+function sendGroupMessage(groupId, text, senderId) {
+    const messageId = generateMessageId();
+    
+    const messageData = {
+        messageId: messageId,
+        groupId: groupId,
+        sender: senderId,
+        text: text,
+        timestamp: Date.now(),
+        type: 'text',
+        status: 'sent'
+    };
+    
+    database.ref('whatsapp_group_messages').child(groupId).push(messageData);
+    
+    // Update last active grup
+    database.ref('whatsapp_groups').child(groupId).update({
+        lastActive: Date.now()
+    });
+}
+
+// Fungsi untuk upload status
+async function uploadStatus(content, type = 'text', mediaFile = null) {
+    const statusId = 'status_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+    const userId = currentUserId;
+    
+    let statusData = {
+        statusId: statusId,
+        userId: userId,
+        type: type,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 jam
+        views: {}
+    };
+    
+    if (type === 'text') {
+        statusData.text = content;
+    } else {
+        // Upload media ke storage
+        const storageRef = storage.ref();
+        const fileRef = storageRef.child(`status_media/${Date.now()}_${mediaFile.name}`);
+        
+        await fileRef.put(mediaFile);
+        const mediaURL = await fileRef.getDownloadURL();
+        
+        statusData.mediaURL = mediaURL;
+        statusData.mediaType = mediaFile.type;
+        statusData.fileName = mediaFile.name;
+        statusData.fileSize = mediaFile.size;
+    }
+    
+    // Simpan ke database
+    await database.ref('whatsapp_status').child(statusId).set(statusData);
+    
+    return statusId;
+}
+
+// Fungsi untuk update foto profil yang bisa dilihat semua orang
+async function updateProfileImage(userId, imageFile) {
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(`profile_images/${userId}_${Date.now()}`);
+    
+    // Upload gambar
+    await fileRef.put(imageFile);
+    const downloadURL = await fileRef.getDownloadURL();
+    
+    // Update di database
+    await database.ref('whatsapp_users').child(userId).update({
+        profileImage: downloadURL,
+        profileUpdated: Date.now()
+    });
+    
+    return downloadURL;
+}
+
+// Fungsi untuk load grup chat
+function loadGroupChats(userId) {
+    return new Promise((resolve) => {
+        database.ref('whatsapp_user_groups').child(userId).on('value', snapshot => {
+            const groups = snapshot.val();
+            resolve(groups || {});
+        });
+    });
+}
+
+// Fungsi untuk load status terbaru
+function loadRecentStatus(userId) {
+    return new Promise((resolve) => {
+        // Load status dari kontak
+        database.ref('whatsapp_contacts').child(userId).once('value', contactsSnapshot => {
+            const contacts = contactsSnapshot.val();
+            const statusPromises = [];
+            
+            if (contacts) {
+                Object.keys(contacts).forEach(contactId => {
+                    const promise = database.ref('whatsapp_status')
+                        .orderByChild('userId')
+                        .equalTo(contactId)
+                        .limitToLast(1)
+                        .once('value');
+                    statusPromises.push(promise);
+                });
+            }
+            
+            // Load status sendiri juga
+            statusPromises.push(
+                database.ref('whatsapp_status')
+                    .orderByChild('userId')
+                    .equalTo(userId)
+                    .limitToLast(1)
+                    .once('value')
+            );
+            
+            Promise.all(statusPromises).then(results => {
+                const allStatuses = [];
+                results.forEach(result => {
+                    const statuses = result.val();
+                    if (statuses) {
+                        // Filter hanya yang belum expired
+                        Object.values(statuses).forEach(status => {
+                            if (!isStatusExpired(status)) {
+                                allStatuses.push(status);
+                            }
+                        });
+                    }
+                });
+                
+                // Urutkan berdasarkan waktu
+                allStatuses.sort((a, b) => b.createdAt - a.createdAt);
+                resolve(allStatuses);
+            });
+        });
+    });
+}
+
+// Cek apakah status sudah expired
+function isStatusExpired(status) {
+    if (!status.expiresAt) return true;
+    return Date.now() > status.expiresAt;
+}
+
+// Format waktu status
+function formatStatusTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    
+    if (diff < 60000) return 'Baru saja';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)} menit lalu`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)} jam lalu`;
+    return `${Math.floor(diff / 86400000)} hari lalu`;
+}
+
+// Update status online user
+function updateUserPresence(userId, isOnline = true) {
+    const updates = {
+        online: isOnline,
+        lastSeen: Date.now()
+    };
+    
+    database.ref('whatsapp_users').child(userId).update(updates);
+}
+
+// Handle page visibility untuk update status online
+document.addEventListener('visibilitychange', function() {
+    const userId = currentUserId;
+    if (!userId) return;
+    
+    if (document.visibilityState === 'visible') {
+        updateUserPresence(userId, true);
+    } else {
+        updateUserPresence(userId, false);
+    }
+});
+
+// Handle sebelum page unload
+window.addEventListener('beforeunload', function() {
+    const userId = currentUserId;
+    if (userId) {
+        updateUserPresence(userId, false);
+    }
+});

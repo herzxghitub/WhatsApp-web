@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Taher - Grup</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .groups-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        .groups-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .groups-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .create-group-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .create-group-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Grup List */
+        .groups-list {
+            padding: 20px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .group-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .group-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .group-info {
+            flex: 1;
+        }
+
+        .group-name {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .group-members {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .group-last-message {
+            font-size: 14px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-unread {
+            background-color: var(--whatsapp-green);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .no-groups {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .no-groups i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Modal Buat Grup */
+        .modal-content {
+            max-width: 500px;
+        }
+
+        .members-selection {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .member-item:last-child {
+            border-bottom: none;
+        }
+
+        .member-checkbox {
+            margin-right: 10px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* Chat Grup */
+        .group-chat-header {
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .group-info-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .group-info-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .group-info-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .group-info-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .group-info-body {
+            padding: 20px;
+        }
+
+        .group-members-list {
+            margin-top: 20px;
+        }
+
+        .group-member-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .admin-badge {
+            background-color: var(--whatsapp-green);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .groups-container {
+                padding: 10px;
+            }
+            
+            .groups-header {
+                padding: 15px;
+                border-radius: 10px 10px 0 0;
+            }
+            
+            .create-group-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="groups-container">
+        <!-- Header -->
+        <div class="groups-header">
+            <button class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>Grup WhatsApp</h1>
+            <button class="create-group-btn" id="createGroupBtn">
+                <i class="fas fa-plus"></i>
+                <span>Buat Grup</span>
+            </button>
+        </div>
+
+        <!-- Grup List -->
+        <div class="groups-list" id="groupsList">
+            <div class="no-groups" id="noGroups">
+                <i class="fas fa-users"></i>
+                <h3>Belum Ada Grup</h3>
+                <p>Buat grup baru untuk mulai berkomunikasi dengan banyak orang</p>
+                <button class="btn-primary" id="createFirstGroupBtn" style="margin-top: 20px;">
+                    <i class="fas fa-plus"></i> Buat Grup Pertama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Buat Grup -->
+    <div class="modal" id="createGroupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buat Grup Baru</h3>
+                <button class="close-btn" id="closeCreateGroupModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="groupName">Nama Grup</label>
+                    <input type="text" id="groupName" placeholder="Contoh: Keluarga Besar">
+                </div>
+                
+                <div class="input-group">
+                    <label>Foto Grup (Opsional)</label>
+                    <div class="profile-image-container" style="width: 100px; height: 100px;">
+                        <img src="" alt="Group Photo" class="profile-image" id="groupImagePreview" 
+                             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <button class="change-photo-btn" style="bottom: 0; right: 0;" onclick="document.getElementById('groupPhotoUpload').click()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="groupPhotoUpload" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Pilih Anggota</label>
+                    <div class="members-selection" id="membersSelection">
+                        <div class="loading-spinner" style="margin: 20px auto;"></div>
+                        <p style="text-align: center;">Memuat kontak...</p>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Anggota Terpilih: <span id="selectedCount">0</span> orang</label>
+                </div>
+                
+                <button class="btn-primary" id="saveGroupBtn" style="width: 100%; margin-top: 20px;">
+                    <i class="fas fa-save"></i> Buat Grup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Grup -->
+    <div class="modal" id="groupInfoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Info Grup</h3>
+                <button class="close-btn" id="closeGroupInfoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Nama Grup</label>
+                    <input type="text" id="editGroupName" placeholder="Nama Grup">
+                </div>
+                
+                <div class="input-group">
+                    <label>Foto Grup</label>
+                    <div class="profile-image-container" style="width: 100px; height: 100px; margin: 0 auto;">
+                        <img src="" alt="Group Photo" class="profile-image" id="editGroupImagePreview" 
+                             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                        <button class="change-photo-btn" style="bottom: 0; right: 0;" onclick="document.getElementById('editGroupPhotoUpload').click()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="editGroupPhotoUpload" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Anggota Grup (<span id="memberCount">0</span>)</label>
+                    <div class="members-selection" id="groupMembersList" style="max-height: 200px;">
+                        <!-- Daftar anggota -->
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Tambah Anggota Baru</label>
+                    <input type="text" id="addMemberInput" placeholder="Nomor telepon anggota baru">
+                    <button class="btn-secondary" id="addMemberBtn" style="margin-top: 10px;">
+                        <i class="fas fa-user-plus"></i> Tambah Anggota
+                    </button>
+                </div>
+                
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button class="btn-secondary" id="leaveGroupBtn">
+                        <i class="fas fa-sign-out-alt"></i> Keluar Grup
+                    </button>
+                    <button class="btn-primary" id="updateGroupBtn">
+                        <i class="fas fa-save"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQobSSWqAnctUFiGjf4RNMWueo3SV_fMY",
+            authDomain: "taher-my-id.firebaseapp.com",
+            databaseURL: "https://taher-my-id-default-rtdb.firebaseio.com",
+            projectId: "taher-my-id",
+            storageBucket: "taher-my-id.appspot.com",
+            messagingSenderId: "844154238987",
+            appId: "1:844154238987:web:7f7bb48c3c4a89f9442f0e"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Referensi database
+        const groupsRef = database.ref('whatsapp_groups');
+        const usersRef = database.ref('whatsapp_users');
+        const groupMessagesRef = database.ref('whatsapp_group_messages');
+        const userGroupsRef = database.ref('whatsapp_user_groups');
+
+        // Variabel global
+        let currentUser = null;
+        let allContacts = [];
+        let selectedMembers = new Set();
+        let currentGroup = null;
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initGroups);
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        document.getElementById('createGroupBtn').addEventListener('click', showCreateGroupModal);
+        document.getElementById('createFirstGroupBtn').addEventListener('click', showCreateGroupModal);
+        document.getElementById('closeCreateGroupModal').addEventListener('click', closeCreateGroupModal);
+        document.getElementById('saveGroupBtn').addEventListener('click', createGroup);
+        document.getElementById('groupPhotoUpload').addEventListener('change', previewGroupImage);
+        document.getElementById('closeGroupInfoModal').addEventListener('click', closeGroupInfoModal);
+        document.getElementById('updateGroupBtn').addEventListener('click', updateGroup);
+        document.getElementById('leaveGroupBtn').addEventListener('click', leaveGroup);
+        document.getElementById('addMemberBtn').addEventListener('click', addMemberToGroup);
+        document.getElementById('editGroupPhotoUpload').addEventListener('change', previewEditGroupImage);
+
+        // Inisialisasi halaman grup
+        function initGroups() {
+            // Cek login status
+            const savedUser = localStorage.getItem('whatsapp_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(savedUser);
+            loadUserGroups();
+            loadContacts();
+        }
+
+        // Load grup yang dimiliki user
+        function loadUserGroups() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            userGroupsRef.child(userPhone).on('value', snapshot => {
+                const userGroups = snapshot.val();
+                const groupsList = document.getElementById('groupsList');
+                const noGroups = document.getElementById('noGroups');
+                
+                if (!userGroups || Object.keys(userGroups).length === 0) {
+                    noGroups.style.display = 'block';
+                    return;
+                }
+                
+                noGroups.style.display = 'none';
+                groupsList.innerHTML = '';
+                
+                Object.keys(userGroups).forEach(groupId => {
+                    groupsRef.child(groupId).once('value', groupSnapshot => {
+                        const groupData = groupSnapshot.val();
+                        if (groupData) {
+                            createGroupItem(groupData, groupId);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Buat item grup
+        function createGroupItem(groupData, groupId) {
+            const groupsList = document.getElementById('groupsList');
+            
+            const groupItem = document.createElement('div');
+            groupItem.className = 'group-item';
+            groupItem.dataset.groupId = groupId;
+            
+            // Get last message
+            let lastMessage = 'Belum ada pesan';
+            let lastTime = '';
+            
+            groupMessagesRef.child(groupId).limitToLast(1).once('value', snapshot => {
+                const messages = snapshot.val();
+                if (messages) {
+                    const lastMsg = Object.values(messages)[0];
+                    lastMessage = lastMsg.text || '📎 File';
+                    lastTime = formatTime(lastMsg.timestamp);
+                }
+                
+                const membersCount = Object.keys(groupData.members || {}).length;
+                const avatarText = groupData.groupName.charAt(0).toUpperCase();
+                
+                groupItem.innerHTML = `
+                    <div class="group-avatar">
+                        ${groupData.groupPhoto ? 
+                            `<img src="${groupData.groupPhoto}" alt="${groupData.groupName}">` : 
+                            avatarText
+                        }
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">${groupData.groupName}</div>
+                        <div class="group-members">${membersCount} anggota</div>
+                        <div class="group-last-message">${lastMessage}</div>
+                    </div>
+                    <div class="group-unread">0</div>
+                `;
+                
+                groupItem.addEventListener('click', () => openGroupChat(groupData, groupId));
+                groupsList.appendChild(groupItem);
+            });
+        }
+
+        // Buka chat grup
+        function openGroupChat(groupData, groupId) {
+            // Simpan grup yang sedang dibuka
+            currentGroup = groupId;
+            
+            // Redirect ke halaman chat dengan parameter grup
+            window.location.href = `akun.html?group=${groupId}`;
+        }
+
+        // Load kontak untuk dipilih
+        function loadContacts() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            usersRef.once('value', snapshot => {
+                const users = snapshot.val();
+                allContacts = [];
+                
+                if (users) {
+                    Object.keys(users).forEach(userId => {
+                        // Skip current user
+                        if (userId === userPhone) return;
+                        
+                        const userData = users[userId];
+                        allContacts.push({
+                            id: userId,
+                            ...userData
+                        });
+                    });
+                }
+            });
+        }
+
+        // Tampilkan modal buat grup
+        function showCreateGroupModal() {
+            const modal = document.getElementById('createGroupModal');
+            const membersSelection = document.getElementById('membersSelection');
+            
+            // Reset form
+            document.getElementById('groupName').value = '';
+            document.getElementById('groupImagePreview').src = '';
+            selectedMembers.clear();
+            document.getElementById('selectedCount').textContent = '0';
+            
+            // Load daftar kontak
+            membersSelection.innerHTML = '';
+            
+            allContacts.forEach(contact => {
+                const memberItem = document.createElement('div');
+                memberItem.className = 'member-item';
+                
+                const avatarText = (contact.name || contact.phoneNumber).charAt(0).toUpperCase();
+                
+                memberItem.innerHTML = `
+                    <input type="checkbox" class="member-checkbox" id="member_${contact.id}" value="${contact.id}">
+                    <label for="member_${contact.id}" style="flex: 1; display: flex; align-items: center; cursor: pointer;">
+                        <div class="member-avatar">
+                            ${contact.profileImage ? 
+                                `<img src="${contact.profileImage}" alt="${contact.name}">` : 
+                                avatarText
+                            }
+                        </div>
+                        <div class="member-name">${contact.name || contact.phoneNumber}</div>
+                    </label>
+                `;
+                
+                const checkbox = memberItem.querySelector('.member-checkbox');
+                checkbox.addEventListener('change', updateSelectedCount);
+                
+                membersSelection.appendChild(memberItem);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        // Update jumlah anggota terpilih
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.member-checkbox:checked');
+            selectedMembers = new Set(Array.from(checkboxes).map(cb => cb.value));
+            document.getElementById('selectedCount').textContent = selectedMembers.size;
+        }
+
+        // Preview gambar grup
+        function previewGroupImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('groupImagePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Preview gambar grup edit
+        function previewEditGroupImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('editGroupImagePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Buat grup baru
+        async function createGroup() {
+            const groupName = document.getElementById('groupName').value.trim();
+            const groupPhotoFile = document.getElementById('groupPhotoUpload').files[0];
+            
+            if (!groupName) {
+                alert('Masukkan nama grup!');
+                return;
+            }
+            
+            if (selectedMembers.size < 2) {
+                alert('Pilih minimal 2 anggota!');
+                return;
+            }
+            
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Upload foto grup jika ada
+            let groupPhotoURL = '';
+            if (groupPhotoFile) {
+                groupPhotoURL = await uploadGroupPhoto(groupPhotoFile);
+            }
+            
+            // Buat ID grup
+            const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+            
+            // Tambahkan creator ke anggota
+            const allMembers = [...selectedMembers, userPhone];
+            const membersObject = {};
+            allMembers.forEach(memberId => {
+                membersObject[memberId] = {
+                    joinedAt: Date.now(),
+                    role: memberId === userPhone ? 'admin' : 'member'
+                };
+            });
+            
+            // Data grup
+            const groupData = {
+                groupId: groupId,
+                groupName: groupName,
+                groupPhoto: groupPhotoURL,
+                createdBy: userPhone,
+                createdAt: Date.now(),
+                members: membersObject,
+                lastActive: Date.now()
+            };
+            
+            // Simpan grup
+            groupsRef.child(groupId).set(groupData)
+                .then(() => {
+                    // Tambahkan grup ke setiap anggota
+                    allMembers.forEach(memberId => {
+                        userGroupsRef.child(memberId).child(groupId).set({
+                            joinedAt: Date.now()
+                        });
+                    });
+                    
+                    // Buat pesan selamat datang
+                    const welcomeMessage = {
+                        text: `Grup "${groupName}" telah dibuat.`,
+                        sender: 'System',
+                        timestamp: Date.now(),
+                        type: 'system'
+                    };
+                    
+                    groupMessagesRef.child(groupId).push(welcomeMessage);
+                    
+                    alert('Grup berhasil dibuat!');
+                    closeCreateGroupModal();
+                    loadUserGroups(); // Refresh daftar grup
+                })
+                .catch(error => {
+                    console.error('Error creating group:', error);
+                    alert('Gagal membuat grup!');
+                });
+        }
+
+        // Upload foto grup
+        function uploadGroupPhoto(file) {
+            return new Promise((resolve, reject) => {
+                const storageRef = storage.ref();
+                const fileRef = storageRef.child(`group_photos/${Date.now()}_${file.name}`);
+                
+                fileRef.put(file)
+                    .then(snapshot => snapshot.ref.getDownloadURL())
+                    .then(downloadURL => resolve(downloadURL))
+                    .catch(error => {
+                        console.error('Upload error:', error);
+                        resolve(''); // Return empty string if upload fails
+                    });
+            });
+        }
+
+        // Tambah anggota ke grup
+        function addMemberToGroup() {
+            const memberPhone = document.getElementById('addMemberInput').value.trim().replace('+', '');
+            
+            if (!memberPhone) {
+                alert('Masukkan nomor telepon anggota!');
+                return;
+            }
+            
+            // Cek apakah user ada
+            usersRef.child(memberPhone).once('value', snapshot => {
+                if (!snapshot.exists()) {
+                    alert('User tidak ditemukan!');
+                    return;
+                }
+                
+                // Tambahkan ke grup
+                const userData = snapshot.val();
+                const updateData = {};
+                updateData[`members/${memberPhone}`] = {
+                    joinedAt: Date.now(),
+                    role: 'member'
+                };
+                
+                groupsRef.child(currentGroup).update(updateData)
+                    .then(() => {
+                        // Tambahkan grup ke user
+                        userGroupsRef.child(memberPhone).child(currentGroup).set({
+                            joinedAt: Date.now()
+                        });
+                        
+                        // Pesan sistem
+                        const systemMessage = {
+                            text: `${userData.name || memberPhone} telah ditambahkan ke grup.`,
+                            sender: 'System',
+                            timestamp: Date.now(),
+                            type: 'system'
+                        };
+                        
+                        groupMessagesRef.child(currentGroup).push(systemMessage);
+                        
+                        alert('Anggota berhasil ditambahkan!');
+                        document.getElementById('addMemberInput').value = '';
+                        loadGroupMembers();
+                    })
+                    .catch(error => {
+                        console.error('Error adding member:', error);
+                        alert('Gagal menambah anggota!');
+                    });
+            });
+        }
+
+        // Update grup
+        function updateGroup() {
+            const newName = document.getElementById('editGroupName').value.trim();
+            const editPhotoFile = document.getElementById('editGroupPhotoUpload').files[0];
+            
+            if (!newName) {
+                alert('Masukkan nama grup!');
+                return;
+            }
+            
+            const updates = {
+                groupName: newName
+            };
+            
+            // Upload foto baru jika ada
+            if (editPhotoFile) {
+                uploadGroupPhoto(editPhotoFile)
+                    .then(photoURL => {
+                        updates.groupPhoto = photoURL;
+                        saveGroupUpdates(updates);
+                    });
+            } else {
+                saveGroupUpdates(updates);
+            }
+        }
+
+        // Simpan update grup
+        function saveGroupUpdates(updates) {
+            groupsRef.child(currentGroup).update(updates)
+                .then(() => {
+                    // Pesan sistem
+                    const systemMessage = {
+                        text: `Informasi grup telah diperbarui.`,
+                        sender: 'System',
+                        timestamp: Date.now(),
+                        type: 'system'
+                    };
+                    
+                    groupMessagesRef.child(currentGroup).push(systemMessage);
+                    
+                    alert('Grup berhasil diperbarui!');
+                    closeGroupInfoModal();
+                    loadUserGroups(); // Refresh
+                })
+                .catch(error => {
+                    console.error('Error updating group:', error);
+                    alert('Gagal memperbarui grup!');
+                });
+        }
+
+        // Keluar dari grup
+        function leaveGroup() {
+            if (!confirm('Apakah Anda yakin ingin keluar dari grup ini?')) {
+                return;
+            }
+            
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Hapus user dari anggota grup
+            const updates = {};
+            updates[`members/${userPhone}`] = null;
+            
+            groupsRef.child(currentGroup).update(updates)
+                .then(() => {
+                    // Hapus grup dari user
+                    userGroupsRef.child(userPhone).child(currentGroup).remove();
+                    
+                    // Pesan sistem
+                    const systemMessage = {
+                        text: `${userData.name || userPhone} telah keluar dari grup.`,
+                        sender: 'System',
+                        timestamp: Date.now(),
+                        type: 'system'
+                    };
+                    
+                    groupMessagesRef.child(currentGroup).push(systemMessage);
+                    
+                    alert('Anda telah keluar dari grup!');
+                    closeGroupInfoModal();
+                    goBack();
+                })
+                .catch(error => {
+                    console.error('Error leaving group:', error);
+                    alert('Gagal keluar grup!');
+                });
+        }
+
+        // Load anggota grup
+        function loadGroupMembers() {
+            if (!currentGroup) return;
+            
+            groupsRef.child(currentGroup).child('members').once('value', snapshot => {
+                const members = snapshot.val();
+                const membersList = document.getElementById('groupMembersList');
+                
+                if (!members) return;
+                
+                membersList.innerHTML = '';
+                document.getElementById('memberCount').textContent = Object.keys(members).length;
+                
+                Object.keys(members).forEach(memberId => {
+                    usersRef.child(memberId).once('value', userSnapshot => {
+                        const userData = userSnapshot.val();
+                        if (userData) {
+                            const memberItem = document.createElement('div');
+                            memberItem.className = 'group-member-item';
+                            
+                            const avatarText = (userData.name || userData.phoneNumber).charAt(0).toUpperCase();
+                            const role = members[memberId].role === 'admin' ? ' (Admin)' : '';
+                            
+                            memberItem.innerHTML = `
+                                <div class="member-avatar">
+                                    ${userData.profileImage ? 
+                                        `<img src="${userData.profileImage}" alt="${userData.name}">` : 
+                                        avatarText
+                                    }
+                                </div>
+                                <div class="member-name">${userData.name || userData.phoneNumber}${role}</div>
+                            `;
+                            
+                            membersList.appendChild(memberItem);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Tampilkan modal info grup
+        function showGroupInfoModal(groupId, groupData) {
+            currentGroup = groupId;
+            
+            document.getElementById('editGroupName').value = groupData.groupName || '';
+            document.getElementById('editGroupImagePreview').src = groupData.groupPhoto || '';
+            
+            loadGroupMembers();
+            
+            document.getElementById('groupInfoModal').style.display = 'flex';
+        }
+
+        // Tutup modal buat grup
+        function closeCreateGroupModal() {
+            document.getElementById('createGroupModal').style.display = 'none';
+        }
+
+        // Tutup modal info grup
+        function closeGroupInfoModal() {
+            document.getElementById('groupInfoModal').style.display = 'none';
+        }
+
+        // Kembali ke halaman sebelumnya
+        function goBack() {
+            window.location.href = 'akun.html';
+        }
+
+        // Format waktu
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 86400000) { // Kurang dari 24 jam
+                return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            }
+        }
+    </script>
+</body>
+</html>

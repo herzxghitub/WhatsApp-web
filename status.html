@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Taher - Status</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .status-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .status-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .new-status-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-status-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Status Timeline */
+        .status-timeline {
+            padding: 20px;
+        }
+
+        .status-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--whatsapp-dark-green);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .status-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--whatsapp-green);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-name {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .status-time {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-preview {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .my-status {
+            background-color: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        .no-status {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .no-status i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Modal Buat Status */
+        .create-status-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-preview-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-preview-header {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--whatsapp-dark-green), var(--whatsapp-green));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-preview-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .status-media-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .status-action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .status-action-btn.primary {
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark-green));
+            color: white;
+        }
+
+        .status-action-btn.secondary {
+            background-color: #f0f2f5;
+            color: #666;
+        }
+
+        /* Status View Modal */
+        .status-view-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 3000;
+        }
+
+        .status-view-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-view-media {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .status-view-text {
+            color: white;
+            font-size: 24px;
+            padding: 40px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .status-view-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 3001;
+        }
+
+        .status-view-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .status-progress-bar {
+            height: 100%;
+            background-color: white;
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .status-container {
+                padding: 10px;
+            }
+            
+            .status-header {
+                padding: 15px;
+                border-radius: 10px 10px 0 0;
+            }
+            
+            .new-status-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <!-- Header -->
+        <div class="status-header">
+            <button class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>Status</h1>
+            <button class="new-status-btn" id="newStatusBtn">
+                <i class="fas fa-plus"></i>
+                <span>Status Baru</span>
+            </button>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="status-timeline" id="statusTimeline">
+            <!-- Status Saya -->
+            <div class="status-section">
+                <div class="section-title">Status Saya</div>
+                <div class="status-item my-status" id="myStatusItem">
+                    <div class="status-avatar" id="myStatusAvatar">
+                        <!-- Avatar akan diisi oleh JavaScript -->
+                    </div>
+                    <div class="status-info">
+                        <div class="status-name">Status Saya</div>
+                        <div class="status-time" id="myStatusTime">Ketuk untuk menambahkan pembaruan status</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Terbaru -->
+            <div class="status-section">
+                <div class="section-title">Status Terbaru</div>
+                <div id="recentStatusList">
+                    <!-- Status dari kontak akan dimuat di sini -->
+                </div>
+            </div>
+
+            <!-- Status Tersimpan -->
+            <div class="status-section" id="savedStatusSection" style="display: none;">
+                <div class="section-title">Tersimpan</div>
+                <div id="savedStatusList">
+                    <!-- Status tersimpan akan dimuat di sini -->
+                </div>
+            </div>
+
+            <div class="no-status" id="noStatus" style="display: none;">
+                <i class="fas fa-eye-slash"></i>
+                <h3>Tidak Ada Status</h3>
+                <p>Tidak ada status dari kontak Anda</p>
+                <p>Tambahkan status Anda sendiri atau tunggu kontak Anda membagikan status</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Buat Status -->
+    <div class="create-status-modal" id="createStatusModal">
+        <div class="status-preview-container">
+            <div class="status-preview-header">
+                <h3 style="margin: 0;">Buat Status</h3>
+                <button class="close-btn" id="closeStatusModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="status-preview-content">
+                <div class="status-type-selection">
+                    <div class="status-type-options">
+                        <button class="status-type-btn active" data-type="text">
+                            <i class="fas fa-font"></i> Teks
+                        </button>
+                        <button class="status-type-btn" data-type="photo">
+                            <i class="fas fa-camera"></i> Foto
+                        </button>
+                        <button class="status-type-btn" data-type="video">
+                            <i class="fas fa-video"></i> Video
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="status-content-area" id="statusContentArea">
+                    <!-- Konten akan berubah berdasarkan tipe status -->
+                    <textarea class="status-text-input" id="statusTextInput" 
+                              placeholder="Apa yang sedang Anda pikirkan?" maxlength="500"></textarea>
+                    <div class="character-count" style="text-align: right; color: #666; margin-bottom: 20px;">
+                        <span id="charCount">0</span>/500
+                    </div>
+                </div>
+                
+                <div class="status-media-area" id="statusMediaArea" style="display: none;">
+                    <input type="file" id="statusMediaUpload" accept="image/*,video/*" style="display: none;">
+                    <button class="btn-primary" id="pickMediaBtn" style="width: 100%; margin-bottom: 20px;">
+                        <i class="fas fa-image"></i> Pilih Foto/Video
+                    </button>
+                    <div id="mediaPreview"></div>
+                </div>
+                
+                <div class="status-actions">
+                    <button class="status-action-btn secondary" id="cancelStatusBtn">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                    <button class="status-action-btn primary" id="postStatusBtn">
+                        <i class="fas fa-paper-plane"></i> Posting Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lihat Status -->
+    <div class="status-view-modal" id="statusViewModal">
+        <div class="status-progress" id="statusProgress">
+            <div class="status-progress-bar" id="statusProgressBar"></div>
+        </div>
+        
+        <div class="status-view-container" id="statusViewContainer">
+            <!-- Status akan dimuat di sini -->
+        </div>
+        
+        <button class="status-view-close" id="closeStatusView">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="status-view-info" id="statusViewInfo">
+            <!-- Info status akan dimuat di sini -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQobSSWqAnctUFiGjf4RNMWueo3SV_fMY",
+            authDomain: "taher-my-id.firebaseapp.com",
+            databaseURL: "https://taher-my-id-default-rtdb.firebaseio.com",
+            projectId: "taher-my-id",
+            storageBucket: "taher-my-id.appspot.com",
+            messagingSenderId: "844154238987",
+            appId: "1:844154238987:web:7f7bb48c3c4a89f9442f0e"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Referensi database
+        const statusRef = database.ref('whatsapp_status');
+        const usersRef = database.ref('whatsapp_users');
+        const contactsRef = database.ref('whatsapp_contacts');
+
+        // Variabel global
+        let currentUser = null;
+        let userData = null;
+        let currentStatusType = 'text';
+        let statusViewInterval = null;
+        let currentStatusIndex = 0;
+        let currentStatuses = [];
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initStatus);
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        document.getElementById('newStatusBtn').addEventListener('click', showCreateStatusModal);
+        document.getElementById('myStatusItem').addEventListener('click', showCreateStatusModal);
+        document.getElementById('closeStatusModal').addEventListener('click', closeCreateStatusModal);
+        document.getElementById('cancelStatusBtn').addEventListener('click', closeCreateStatusModal);
+        document.getElementById('postStatusBtn').addEventListener('click', postStatus);
+        document.getElementById('statusTextInput').addEventListener('input', updateCharCount);
+        document.getElementById('pickMediaBtn').addEventListener('click', () => {
+            document.getElementById('statusMediaUpload').click();
+        });
+        document.getElementById('statusMediaUpload').addEventListener('change', previewStatusMedia);
+        document.getElementById('closeStatusView').addEventListener('click', closeStatusView);
+        document.querySelectorAll('.status-type-btn').forEach(btn => {
+            btn.addEventListener('click', changeStatusType);
+        });
+
+        // Inisialisasi halaman status
+        function initStatus() {
+            // Cek login status
+            const savedUser = localStorage.getItem('whatsapp_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(savedUser);
+            loadUserData();
+            loadStatuses();
+        }
+
+        // Load data user
+        function loadUserData() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            usersRef.child(userPhone).on('value', snapshot => {
+                userData = snapshot.val();
+                
+                if (userData) {
+                    // Update avatar status saya
+                    const myStatusAvatar = document.getElementById('myStatusAvatar');
+                    if (userData.profileImage) {
+                        myStatusAvatar.innerHTML = `<img src="${userData.profileImage}" alt="${userData.name}">`;
+                    } else {
+                        const avatarText = (userData.name || userData.phoneNumber).charAt(0).toUpperCase();
+                        myStatusAvatar.textContent = avatarText;
+                    }
+                    
+                    // Load status terakhir saya
+                    loadMyLatestStatus();
+                }
+            });
+        }
+
+        // Load status terakhir saya
+        function loadMyLatestStatus() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            statusRef.orderByChild('userId').equalTo(userPhone).limitToLast(1).once('value', snapshot => {
+                const statuses = snapshot.val();
+                
+                if (statuses) {
+                    const latestStatus = Object.values(statuses)[0];
+                    const myStatusTime = document.getElementById('myStatusTime');
+                    
+                    if (isStatusExpired(latestStatus)) {
+                        myStatusTime.textContent = 'Ketuk untuk menambahkan pembaruan status';
+                    } else {
+                        myStatusTime.textContent = `Diperbarui ${formatStatusTime(latestStatus.createdAt)}`;
+                    }
+                }
+            });
+        }
+
+        // Load semua status
+        function loadStatuses() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Load kontak dulu
+            contactsRef.child(userPhone).once('value', snapshot => {
+                const contacts = snapshot.val();
+                const recentStatusList = document.getElementById('recentStatusList');
+                const noStatus = document.getElementById('noStatus');
+                
+                if (!contacts) {
+                    noStatus.style.display = 'block';
+                    recentStatusList.innerHTML = '';
+                    return;
+                }
+                
+                const contactIds = Object.keys(contacts);
+                let hasStatus = false;
+                
+                // Load status dari setiap kontak
+                contactIds.forEach(contactId => {
+                    statusRef.orderByChild('userId').equalTo(contactId).limitToLast(1).once('value', statusSnapshot => {
+                        const statuses = statusSnapshot.val();
+                        
+                        if (statuses) {
+                            const latestStatus = Object.values(statuses)[0];
+                            
+                            // Cek apakah status belum expired (24 jam)
+                            if (!isStatusExpired(latestStatus)) {
+                                hasStatus = true;
+                                
+                                // Load info user untuk status ini
+                                usersRef.child(contactId).once('value', userSnapshot => {
+                                    const contactData = userSnapshot.val();
+                                    if (contactData) {
+                                        createStatusItem(latestStatus, contactData);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+                
+                // Cek status saya sendiri
+                statusRef.orderByChild('userId').equalTo(userPhone).once('value', mySnapshot => {
+                    const myStatuses = mySnapshot.val();
+                    if (myStatuses) {
+                        const myLatest = Object.values(myStatuses).find(status => !isStatusExpired(status));
+                        if (myLatest) hasStatus = true;
+                    }
+                    
+                    // Tampilkan pesan jika tidak ada status
+                    if (!hasStatus) {
+                        noStatus.style.display = 'block';
+                    } else {
+                        noStatus.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Buat item status
+        function createStatusItem(status, userData) {
+            const recentStatusList = document.getElementById('recentStatusList');
+            
+            const statusItem = document.createElement('div');
+            statusItem.className = 'status-item';
+            statusItem.dataset.statusId = status.statusId;
+            statusItem.dataset.userId = status.userId;
+            
+            const avatarText = (userData.name || userData.phoneNumber).charAt(0).toUpperCase();
+            const statusTypeIcon = status.type === 'text' ? '📝' : 
+                                  status.type === 'photo' ? '🖼️' : '🎥';
+            
+            statusItem.innerHTML = `
+                <div class="status-avatar">
+                    ${userData.profileImage ? 
+                        `<img src="${userData.profileImage}" alt="${userData.name}">` : 
+                        avatarText
+                    }
+                </div>
+                <div class="status-info">
+                    <div class="status-name">${userData.name || userData.phoneNumber}</div>
+                    <div class="status-time">${formatStatusTime(status.createdAt)}</div>
+                    <div class="status-preview">${statusTypeIcon} ${getStatusPreview(status)}</div>
+                </div>
+            `;
+            
+            statusItem.addEventListener('click', () => viewUserStatus(status.userId));
+            recentStatusList.appendChild(statusItem);
+        }
+
+        // Dapatkan preview status
+        function getStatusPreview(status) {
+            if (status.type === 'text') {
+                return status.text.length > 50 ? status.text.substring(0, 50) + '...' : status.text;
+            } else if (status.type === 'photo') {
+                return 'Foto';
+            } else if (status.type === 'video') {
+                return 'Video';
+            }
+            return 'Status';
+        }
+
+        // Tampilkan modal buat status
+        function showCreateStatusModal() {
+            const modal = document.getElementById('createStatusModal');
+            
+            // Reset form
+            document.getElementById('statusTextInput').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('mediaPreview').innerHTML = '';
+            document.getElementById('statusMediaArea').style.display = 'none';
+            document.getElementById('statusContentArea').style.display = 'block';
+            
+            // Set tipe default
+            currentStatusType = 'text';
+            document.querySelectorAll('.status-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('[data-type="text"]').classList.add('active');
+            
+            modal.style.display = 'flex';
+        }
+
+        // Ganti tipe status
+        function changeStatusType(event) {
+            const type = event.target.closest('.status-type-btn').dataset.type;
+            currentStatusType = type;
+            
+            // Update UI
+            document.querySelectorAll('.status-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.status-type-btn').classList.add('active');
+            
+            // Tampilkan konten yang sesuai
+            if (type === 'text') {
+                document.getElementById('statusContentArea').style.display = 'block';
+                document.getElementById('statusMediaArea').style.display = 'none';
+            } else {
+                document.getElementById('statusContentArea').style.display = 'none';
+                document.getElementById('statusMediaArea').style.display = 'block';
+            }
+        }
+
+        // Update karakter count
+        function updateCharCount() {
+            const text = document.getElementById('statusTextInput').value;
+            document.getElementById('charCount').textContent = text.length;
+        }
+
+        // Preview media status
+        function previewStatusMedia(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const mediaPreview = document.getElementById('mediaPreview');
+            mediaPreview.innerHTML = '';
+            
+            const reader = new FileReader();
+            
+            if (file.type.startsWith('image/')) {
+                reader.onload = function(e) {
+                    mediaPreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" 
+                             class="status-media-preview">
+                        <p style="text-align: center; margin-top: 10px; color: #666;">
+                            ${file.name} (${formatFileSize(file.size)})
+                        </p>
+                    `;
+                };
+            } else if (file.type.startsWith('video/')) {
+                reader.onload = function(e) {
+                    mediaPreview.innerHTML = `
+                        <video controls class="status-media-preview">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Browser Anda tidak mendukung video tag.
+                        </video>
+                        <p style="text-align: center; margin-top: 10px; color: #666;">
+                            ${file.name} (${formatFileSize(file.size)})
+                        </p>
+                    `;
+                };
+            }
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Posting status baru
+        async function postStatus() {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            // Validasi
+            if (currentStatusType === 'text') {
+                const text = document.getElementById('statusTextInput').value.trim();
+                if (!text) {
+                    alert('Masukkan teks status!');
+                    return;
+                }
+                
+                await saveTextStatus(userPhone, text);
+            } else {
+                const file = document.getElementById('statusMediaUpload').files[0];
+                if (!file) {
+                    alert('Pilih foto atau video!');
+                    return;
+                }
+                
+                // Validasi ukuran file
+                if (file.size > 10 * 1024 * 1024) { // 10MB
+                    alert('Ukuran file terlalu besar. Maksimal 10MB.');
+                    return;
+                }
+                
+                await saveMediaStatus(userPhone, file);
+            }
+            
+            alert('Status berhasil diposting!');
+            closeCreateStatusModal();
+            loadMyLatestStatus();
+            loadStatuses(); // Refresh
+        }
+
+        // Simpan status teks
+        function saveTextStatus(userPhone, text) {
+            const statusId = 'status_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+            
+            const statusData = {
+                statusId: statusId,
+                userId: userPhone,
+                type: 'text',
+                text: text,
+                createdAt: Date.now(),
+                expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 jam
+                views: {}
+            };
+            
+            return statusRef.child(statusId).set(statusData);
+        }
+
+        // Simpan status media
+        async function saveMediaStatus(userPhone, file) {
+            // Upload file ke storage
+            const storageRef = storage.ref();
+            const fileRef = storageRef.child(`status_media/${Date.now()}_${file.name}`);
+            
+            try {
+                await fileRef.put(file);
+                const mediaURL = await fileRef.getDownloadURL();
+                
+                const statusId = 'status_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+                const type = file.type.startsWith('image/') ? 'photo' : 'video';
+                
+                const statusData = {
+                    statusId: statusId,
+                    userId: userPhone,
+                    type: type,
+                    mediaURL: mediaURL,
+                    mediaType: file.type,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    createdAt: Date.now(),
+                    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 jam
+                    views: {}
+                };
+                
+                return statusRef.child(statusId).set(statusData);
+            } catch (error) {
+                console.error('Error uploading status media:', error);
+                throw error;
+            }
+        }
+
+        // Lihat status user
+        function viewUserStatus(userId) {
+            currentStatuses = [];
+            currentStatusIndex = 0;
+            
+            // Load semua status user yang belum expired
+            statusRef.orderByChild('userId').equalTo(userId).once('value', snapshot => {
+                const statuses = snapshot.val();
+                
+                if (!statuses) return;
+                
+                // Filter status yang belum expired
+                const validStatuses = Object.values(statuses).filter(status => !isStatusExpired(status));
+                
+                if (validStatuses.length === 0) return;
+                
+                currentStatuses = validStatuses;
+                
+                // Load user info
+                usersRef.child(userId).once('value', userSnapshot => {
+                    const userInfo = userSnapshot.val();
+                    
+                    // Tampilkan status pertama
+                    showStatusView(currentStatuses[0], userInfo);
+                    
+                    // Tandai sebagai dilihat
+                    markStatusAsViewed(currentStatuses[0].statusId);
+                });
+            });
+        }
+
+        // Tampilkan status view
+        function showStatusView(status, userInfo) {
+            const modal = document.getElementById('statusViewModal');
+            const container = document.getElementById('statusViewContainer');
+            const infoDiv = document.getElementById('statusViewInfo');
+            
+            container.innerHTML = '';
+            
+            // Reset progress bar
+            document.getElementById('statusProgressBar').style.width = '0%';
+            
+            // Tampilkan konten status
+            if (status.type === 'text') {
+                container.innerHTML = `
+                    <div class="status-view-text">${status.text}</div>
+                `;
+            } else if (status.type === 'photo') {
+                container.innerHTML = `
+                    <img src="${status.mediaURL}" alt="Status Photo" class="status-view-media">
+                `;
+            } else if (status.type === 'video') {
+                container.innerHTML = `
+                    <video controls autoplay class="status-view-media">
+                        <source src="${status.mediaURL}" type="${status.mediaType}">
+                    </video>
+                `;
+            }
+            
+            // Tampilkan info user
+            infoDiv.innerHTML = `
+                <div class="status-avatar" style="width: 40px; height: 40px; font-size: 16px;">
+                    ${userInfo.profileImage ? 
+                        `<img src="${userInfo.profileImage}" alt="${userInfo.name}">` : 
+                        (userInfo.name || userInfo.phoneNumber).charAt(0).toUpperCase()
+                    }
+                </div>
+                <div>
+                    <div style="font-weight: 600;">${userInfo.name || userInfo.phoneNumber}</div>
+                    <div style="font-size: 12px;">${formatStatusTime(status.createdAt)}</div>
+                </div>
+            `;
+            
+            // Start progress bar
+            startStatusProgress();
+            
+            modal.style.display = 'block';
+            
+            // Setup event untuk next status
+            container.addEventListener('click', nextStatus);
+        }
+
+        // Mulai progress bar status
+        function startStatusProgress() {
+            const progressBar = document.getElementById('statusProgressBar');
+            progressBar.style.width = '0%';
+            
+            clearInterval(statusViewInterval);
+            
+            // 10 detik untuk setiap status
+            let progress = 0;
+            statusViewInterval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(statusViewInterval);
+                    nextStatus();
+                }
+            }, 100); // Update setiap 100ms
+        }
+
+        // Status berikutnya
+        function nextStatus() {
+            currentStatusIndex++;
+            
+            if (currentStatusIndex >= currentStatuses.length) {
+                closeStatusView();
+                return;
+            }
+            
+            // Load user info untuk status berikutnya
+            const nextStatus = currentStatuses[currentStatusIndex];
+            usersRef.child(nextStatus.userId).once('value', userSnapshot => {
+                const userInfo = userSnapshot.val();
+                showStatusView(nextStatus, userInfo);
+                
+                // Tandai sebagai dilihat
+                markStatusAsViewed(nextStatus.statusId);
+            });
+        }
+
+        // Tandai status sebagai dilihat
+        function markStatusAsViewed(statusId) {
+            const userPhone = currentUser.phone.replace('+', '');
+            
+            statusRef.child(statusId).child('views').child(userPhone).set({
+                viewedAt: Date.now()
+            });
+        }
+
+        // Cek apakah status sudah expired
+        function isStatusExpired(status) {
+            return Date.now() > status.expiresAt;
+        }
+
+        // Format waktu status
+        function formatStatusTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            // Kurang dari 1 menit
+            if (diff < 60000) {
+                return 'Baru saja';
+            }
+            
+            // Kurang dari 1 jam
+            if (diff < 3600000) {
+                const minutes = Math.floor(diff / 60000);
+                return `${minutes} menit lalu`;
+            }
+            
+            // Kurang dari 24 jam
+            if (diff < 86400000) {
+                const hours = Math.floor(diff / 3600000);
+                return `${hours} jam lalu`;
+            }
+            
+            // Lebih dari 24 jam
+            const days = Math.floor(diff / 86400000);
+            return `${days} hari lalu`;
+        }
+
+        // Format ukuran file
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // Tutup modal buat status
+        function closeCreateStatusModal() {
+            document.getElementById('createStatusModal').style.display = 'none';
+        }
+
+        // Tutup status view
+        function closeStatusView() {
+            clearInterval(statusViewInterval);
+            document.getElementById('statusViewModal').style.display = 'none';
+        }
+
+        // Kembali ke halaman sebelumnya
+        function goBack() {
+            window.location.href = 'akun.html';
+        }
+    </script>
+</body>
+</html>
